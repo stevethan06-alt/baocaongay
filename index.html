@@ -404,6 +404,20 @@
 </div>
 
 <script>
+    // Hàm chuẩn hóa định dạng ngày tháng hiển thị
+function formatDate(dateStr) {
+    if (!dateStr) return "";
+    // Nếu ngày trả về dạng chuẩn ISO/UTC
+    let d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+        let day = String(d.getDate()).padStart(2, '0');
+        let month = String(d.getMonth() + 1).padStart(2, '0');
+        let year = d.getFullYear();
+        // Kiểm tra xem năm có hợp lý không (tránh trường hợp lỗi lệch múi giờ)
+        return `${day}/${month}/${year}`;
+    }
+    return dateStr;
+}
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
 
     const database = {
@@ -416,7 +430,7 @@
             {
                 hangMuc: "Nhôm kính", 
                 nhaThau: "VIỆT ANH", 
-                congTac: ["Vận chuyển vật tư", "Lắp đặt khung phụ", "Bơm vữa", "lắp đặt khung chính", "gắn ron", "Bắn keo Silicone", "Vệ sinh"]
+                congTac: ["Vận chuyển vật tư", "Lắp đặt khung phụ", "Bơm vữa", "lắp đặt khung chính", "", "B KEO SILICONE", "VỆ SINH"]
             },
             {
                 hangMuc: "Vách kính phòng tắm", 
@@ -506,11 +520,11 @@
         .then(data => {
             const nlBody = document.getElementById('nlTableBody');
             nlBody.innerHTML = "";
-            if(data.nhanLuc) {
+           if(data.nhanLuc) {
                 data.nhanLuc.forEach(row => {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${row.ngay}</td>
+                        <td>${formatDate(row.ngay)}</td> <!-- ĐỔI Ở ĐÂY -->
                         <td>${row.tang}</td>
                         <td>${row.hangMuc}</td>
                         <td>${row.nhaThau}</td>
@@ -524,13 +538,11 @@
                 updateTotal();
             }
 
-            const bcBody = document.getElementById('bcTableBody');
-            bcBody.innerHTML = "";
             if(data.baoCao) {
                 data.baoCao.forEach(row => {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${row.ngay}</td>
+                        <td>${formatDate(row.ngay)}</td> <!-- VÀ ĐỔI Ở ĐÂY NỮA -->
                         <td>${row.thapTang}</td>
                         <td>${row.hangMuc}</td>
                         <td>${row.nhaThau}</td>
