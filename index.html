@@ -634,7 +634,7 @@ function formatDate(dateStr) {
         const nhathau = document.getElementById('nlSelectNhaThau').value;
         const congtac = document.getElementById('nlSelectCongTac').value;
         const nhanlucVal = document.getElementById('inputNhanLuc').value;
-        const ghichu = document.getElementById('nlInputGhiChu').value || "Không có";
+        const ghichu = document.getElementById('nlInputGhiChu').value || "";
 
         if(!nhanlucVal || isNaN(nhanlucVal)) {
             alert('Vui lòng nhập số lượng công nhân hợp lệ!');
@@ -669,7 +669,7 @@ function formatDate(dateStr) {
         const nhathau = document.getElementById('bcSelectNhaThau').value;
         const can = document.getElementById('bcSelectCan').value;
         const trangthai = document.getElementById('bcSelectTrangThai').value;
-        const ghichu = document.getElementById('bcInputGhiChu').value || "Không có";
+        const ghichu = document.getElementById('bcInputGhiChu').value || "";
 
         const tbody = document.getElementById('bcTableBody');
         const currentDate = new Date().toLocaleDateString('vi-VN');
