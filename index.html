@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý Nhân lực & Thi công Công trình</title>
+    <script>
+        // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
+        // Mỗi lần bạn sửa code xong, hãy tăng số phiên bản này lên (VD: v2, v3, v4...)
+        const APP_VERSION = "2026.08.23-v1"; 
+        if (localStorage.getItem('app_version') !== APP_VERSION) {
+            localStorage.setItem('app_version', APP_VERSION);
+            window.location.reload(true);
+        }
+    </script>
     <style>
         :root {
             --bg-color: #0b131a;
@@ -40,6 +49,7 @@
             display: flex;
             gap: 15px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .main-tab-btn {
             background-color: #0e1721;
@@ -162,6 +172,52 @@
             font-weight: bold;
         }
 
+        /* Dashboard Styles */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .tower-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .tower-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .dash-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .dash-sub-card {
+            background-color: #0b131a;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .dash-sub-card h4 {
+            margin: 0 0 8px 0;
+            color: white;
+            font-size: 15px;
+        }
+        .dash-sub-card p {
+            margin: 4px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .dash-sub-card .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
         .table-container {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -206,6 +262,7 @@
 <div class="main-tabs">
     <button class="main-tab-btn active" onclick="switchMainTab('nhanluc')">Quản Lý Nhân Lực</button>
     <button class="main-tab-btn" onclick="switchMainTab('baocao')">Báo Cáo Cuối Ngày</button>
+    <button class="main-tab-btn" onclick="switchMainTab('dashboard')">Dashboard Tổng Quan</button>
 </div>
 
 <!-- ================= TAB 1: QUẢN LÝ NHÂN LỰC ================= -->
@@ -339,6 +396,13 @@
     </div>
 </div>
 
+<!-- ================= TAB 3: DASHBOARD TỔNG QUAN ================= -->
+<div id="viewDashboard" class="section-view">
+    <div id="dashboardContainer" class="dashboard-container">
+        <!-- Dữ liệu chi tiết theo tháp, nhà thầu, hạng mục (chỉ hiện công nhân) -->
+    </div>
+</div>
+
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
 
@@ -352,41 +416,41 @@
             {
                 hangMuc: "Nhôm kính", 
                 nhaThau: "VIỆT ANH", 
-                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+                congTac: ["Vận chuyển vật tư", "Lắp đặt khung phụ", "Bơm vữa", "L", "LẮP RON", "B KEO SILICONE", "VỆ SINH"]
             },
             {
                 hangMuc: "Vách kính phòng tắm", 
                 nhaThau: "NHẬT KHOA", 
-                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone"]
+                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone","Vệ sinh"]
             }
         ],
         "Tháp B1": [
             {
                 hangMuc: "Lắp đặt lan can", 
-                nhaThau: "BÁN VIỆT", 
-                congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
+                nhaThau: "BẢN VIỆT", 
+                congTac: ["Vận chuyển vật tư", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
             },
             {
                 hangMuc: "Nhôm kính", 
                 nhaThau: "THÁI LONG", 
-                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+                congTac: ["Vận chuyển vật tư", "Lắp đặt khung phụ", "Bơm vữa", "Lắp khung chính", "gắn Ron", "Bắn Silicone", "Vệ sinh"]
             },
             {
                 hangMuc: "Vách kính phòng tắm", 
-                nhaThau: "THÁI LONG", 
-                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone"]
+                nhaThau: "CAO TRUNG NGHĨA", 
+                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone","Vệ sinh"]
             }
         ],
         "Tháp B2": [
             {
                 hangMuc: "Lắp đặt lan can", 
                 nhaThau: "BÁN VIỆT", 
-                congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
+                congTac: ["Vận chuyển vật tư", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
             },
             {
                 hangMuc: "Nhôm kính", 
                 nhaThau: "HƯNG GIA TUỆ", 
-                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+                congTac: ["Vận chuyển vật tư", "Lắp đặt khung phụ", "Bơm vữa", "Lắp khung chính", "gắn Ron", "Bắn Silicone", "Vệ sinh"]
             },
             {
                 hangMuc: "Vách kính phòng tắm", 
@@ -412,9 +476,13 @@
         if(tabName === 'nhanluc') {
             document.querySelectorAll('.main-tab-btn')[0].classList.add('active');
             document.getElementById('viewNhanLuc').classList.add('active');
-        } else {
+        } else if(tabName === 'baocao') {
             document.querySelectorAll('.main-tab-btn')[1].classList.add('active');
             document.getElementById('viewBaoCao').classList.add('active');
+        } else {
+            document.querySelectorAll('.main-tab-btn')[2].classList.add('active');
+            document.getElementById('viewDashboard').classList.add('active');
+            updateDashboardStats();
         }
     }
 
@@ -474,6 +542,7 @@
                     bcBody.prepend(tr);
                 });
             }
+            updateDashboardStats();
         })
         .catch(err => console.log("Lỗi tải dữ liệu chung:", err));
     }
@@ -579,6 +648,7 @@
         document.getElementById('inputNhanLuc').value = '';
         document.getElementById('nlInputGhiChu').value = '';
         updateTotal();
+        updateDashboardStats();
     }
 
     function addBaoCaoRow() {
@@ -605,11 +675,13 @@
         `;
         tbody.prepend(tr);
         document.getElementById('bcInputGhiChu').value = '';
+        updateDashboardStats();
     }
 
     function deleteRow(btn, mode) {
         btn.closest('tr').remove();
         if(mode === 'nhanluc') updateTotal();
+        updateDashboardStats();
     }
 
     function updateTotal() {
@@ -622,6 +694,73 @@
             }
         });
         document.getElementById('totalNhanLuc').innerText = sum + " công nhân";
+    }
+
+    function updateDashboardStats() {
+        const container = document.getElementById('dashboardContainer');
+        container.innerHTML = "";
+
+        const rowsNL = document.querySelectorAll('#nlTableBody tr');
+        let nlMap = {}; 
+
+        rowsNL.forEach(row => {
+            const cols = row.querySelectorAll('td');
+            if(cols.length >= 7) {
+                const tangText = cols[1].innerText; 
+                const hangMucText = cols[2].innerText;
+                const nhaThauText = cols[3].innerText;
+                const val = parseInt(cols[5].getAttribute('data-val')) || 0;
+
+                let matchedTower = Object.keys(database).find(t => tangText.includes(t)) || "Khác";
+
+                if(!nlMap[matchedTower]) nlMap[matchedTower] = {};
+                if(!nlMap[matchedTower][nhaThauText]) nlMap[matchedTower][nhaThauText] = {};
+                if(!nlMap[matchedTower][nhaThauText][hangMucText]) nlMap[matchedTower][nhaThauText][hangMucText] = 0;
+
+                nlMap[matchedTower][nhaThauText][hangMucText] += val;
+            }
+        });
+
+        Object.keys(database).forEach(tower => {
+            let towerDiv = document.createElement('div');
+            towerDiv.className = 'tower-section';
+            
+            let towerTitle = document.createElement('div');
+            towerTitle.className = 'tower-title';
+            towerTitle.innerText = tower;
+            towerDiv.appendChild(towerTitle);
+
+            let gridDiv = document.createElement('div');
+            gridDiv.className = 'dash-cards-grid';
+
+            let hasContent = false;
+
+            database[tower].forEach(item => {
+                let nt = item.nhaThau;
+                let hm = item.hangMuc;
+
+                let workers = (nlMap[tower] && nlMap[tower][nt] && nlMap[tower][nt][hm]) ? nlMap[tower][nt][hm] : 0;
+
+                let card = document.createElement('div');
+                card.className = 'dash-sub-card';
+                card.innerHTML = `
+                    <h4>${hm}</h4>
+                    <p>Nhà thầu: <span style="color: white; font-weight: 600;">${nt}</span></p>
+                    <p>Công nhân: <span class="highlight">${workers} người</span></p>
+                `;
+                gridDiv.appendChild(card);
+                hasContent = true;
+            });
+
+            if(hasContent) {
+                towerDiv.appendChild(gridDiv);
+                container.appendChild(towerDiv);
+            }
+        });
+
+        if(container.children.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu thống kê nào được ghi nhận.</div>`;
+        }
     }
 
     function sendData(mode) {
