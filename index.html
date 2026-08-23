@@ -519,39 +519,61 @@ function formatDate(dateStr) {
         .then(response => response.json())
         .then(data => {
             const nlBody = document.getElementById('nlTableBody');
+            const bcBody = document.getElementById('bcTableBody'); // Thêm dòng này để xử lý bảng báo cáo
+            
             nlBody.innerHTML = "";
-           if(data.nhanLuc) {
+            bcBody.innerHTML = ""; // Xóa dữ liệu cũ của bảng báo cáo
+
+            // Lấy ngày hiện tại theo định dạng DD/MM/YYYY để so sánh
+            const today = new Date();
+            const dayCurrent = String(today.getDate()).padStart(2, '0');
+            const monthCurrent = String(today.getMonth() + 1).padStart(2, '0');
+            const yearCurrent = today.getFullYear();
+            const todayStr = `${dayCurrent}/${monthCurrent}/${yearCurrent}`;
+
+            // Xử lý dữ liệu Nhân Lực (chỉ lấy ngày hôm nay)
+            if(data.nhanLuc) {
                 data.nhanLuc.forEach(row => {
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${formatDate(row.ngay)}</td> <!-- ĐỔI Ở ĐÂY -->
-                        <td>${row.tang}</td>
-                        <td>${row.hangMuc}</td>
-                        <td>${row.nhaThau}</td>
-                        <td>${row.congTac}</td>
-                        <td class="col-nhanluc" data-val="${row.soLuong}">${row.soLuong} công nhân</td>
-                        <td>${row.ghiChu}</td>
-                        <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td>
-                    `;
-                    nlBody.prepend(tr);
+                    let formattedDate = formatDate(row.ngay);
+                    
+                    // Lọc chỉ hiển thị ngày hiện tại (hoặc bạn có thể bỏ điều kiện này nếu muốn hiển thị tất cả)
+                    if (formattedDate === todayStr) {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>${row.tang}</td>
+                            <td>${row.hangMuc}</td>
+                            <td>${row.nhaThau}</td>
+                            <td>${row.congTac}</td>
+                            <td class="col-nhanluc" data-val="${row.soLuong}">${row.soLuong} công nhân</td>
+                            <td>${row.ghiChu}</td>
+                            <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td>
+                        `;
+                        nlBody.prepend(tr);
+                    }
                 });
                 updateTotal();
             }
 
+            // Xử lý dữ liệu Báo Cáo Cuối Ngày (chỉ lấy ngày hôm nay)
             if(data.baoCao) {
                 data.baoCao.forEach(row => {
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${formatDate(row.ngay)}</td> <!-- VÀ ĐỔI Ở ĐÂY NỮA -->
-                        <td>${row.thapTang}</td>
-                        <td>${row.hangMuc}</td>
-                        <td>${row.nhaThau}</td>
-                        <td>${row.can}</td>
-                        <td><b>${row.trangThai}</b></td>
-                        <td>${row.ghiChu}</td>
-                        <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
-                    `;
-                    bcBody.prepend(tr);
+                    let formattedDate = formatDate(row.ngay);
+                    
+                    if (formattedDate === todayStr) {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>${row.thapTang}</td>
+                            <td>${row.hangMuc}</td>
+                            <td>${row.nhaThau}</td>
+                            <td>${row.can}</td>
+                            <td><b>${row.trangThai}</b></td>
+                            <td>${row.ghiChu}</td>
+                            <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+                        `;
+                        bcBody.prepend(tr);
+                    }
                 });
             }
             updateDashboardStats();
