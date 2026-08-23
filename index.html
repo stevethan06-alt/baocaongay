@@ -744,14 +744,12 @@
         updateDashboardStats();
     }
 
-    function clearAllData(mode) {
-        if(confirm('Bạn có chắc chắn muốn xóa hết toàn bộ danh sách hiện tại không?')) {
-            const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
-            document.getElementById(tbodyId).innerHTML = "";
-            if(mode === 'nhanluc') updateTotal();
-            updateDashboardStats();
-        }
-    }
+   function clearAllData(mode) {
+    const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
+    document.getElementById(tbodyId).innerHTML = "";
+    if(mode === 'nhanluc') updateTotal();
+    updateDashboardStats();
+}
 
     function updateTotal() {
         const rows = document.querySelectorAll('#nlTableBody tr');
