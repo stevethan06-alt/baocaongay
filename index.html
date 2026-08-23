@@ -796,13 +796,13 @@ function formatDate(dateStr) {
             container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu thống kê nào được ghi nhận.</div>`;
         }
     }
-
-    function sendData(mode) {
+function sendData(mode) {
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
-        const rows = document.querySelectorAll(`#${tbodyId} tr`);
+        // Chỉ lấy những dòng chưa được lưu/gửi (những dòng người dùng mới thêm trực tiếp trên web)
+        const rows = document.querySelectorAll(`#${tbodyId} tr:not([data-saved="true"])`);
         
         if (rows.length === 0) {
-            alert('Chưa có dữ liệu nào để gửi!');
+            alert('Không có dữ liệu mới nào để gửi!');
             return;
         }
 
@@ -817,7 +817,7 @@ function formatDate(dateStr) {
                     hangMuc: cols[2].innerText,
                     nhaThau: cols[3].innerText,
                     congTac: cols[4].innerText,
-                    soLuong: cols[5].getAttribute('data-val'),
+                    soLuong: cols[5].getAttribute('data-val') || cols[5].innerText,
                     ghiChu: cols[6].innerText
                 });
             });
@@ -841,7 +841,7 @@ function formatDate(dateStr) {
             rows: payloadData
         };
 
-        alert('Đang gửi dữ liệu lên Google Sheets...');
+        alert('Đang gửi dữ liệu mới lên Google Sheets...');
 
         fetch(SCRIPT_URL, {
             method: 'POST',
@@ -852,7 +852,8 @@ function formatDate(dateStr) {
             body: JSON.stringify(payload)
         })
         .then(() => {
-            alert('Đã đồng bộ thành công lên Google Sheets!');
+            alert('Đã đồng bộ thành công!');
+            loadDataFromGoogleSheets(); // Tải lại bảng để đánh dấu các dòng vừa gửi là dữ liệu cũ
         })
         .catch(error => {
             console.error('Lỗi:', error);
