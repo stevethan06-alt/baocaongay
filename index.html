@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Nhân lực & Thi công Công trình</title>
+    <style>
+        :root {
+            --bg-color: #0b131a;
+            --card-bg: #111d28;
+            --border-color: #1f2f3d;
+            --accent-color: #00d2ff;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --hover-color: #162838;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .main-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .main-tab-btn {
+            background-color: #0e1721;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .main-tab-btn.active {
+            background-color: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background-color: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+        }
+
+        .filter-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            background: #0b131a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .submit-container {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .ok-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 15px;
+        }
+        .ok-btn:hover {
+            background-color: #2563eb;
+        }
+        .send-btn {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .send-btn:hover {
+            background-color: #059669;
+        }
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .summary-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: #0e1721;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        tr:hover {
+            background-color: var(--hover-color);
+        }
+        .section-view {
+            display: none;
+        }
+        .section-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>HỆ THỐNG QUẢN LÝ NHÂN LỰC & THI CÔNG</h1>
+    <p>Chọn tháp, tầng, hạng mục, nhà thầu và cập nhật dữ liệu hàng ngày</p>
+</div>
+
+<div class="main-tabs">
+    <button class="main-tab-btn active" onclick="switchMainTab('nhanluc')">Quản Lý Nhân Lực</button>
+    <button class="main-tab-btn" onclick="switchMainTab('baocao')">Báo Cáo Cuối Ngày</button>
+</div>
+
+<!-- ================= TAB 1: QUẢN LÝ NHÂN LỰC ================= -->
+<div id="viewNhanLuc" class="section-view active">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="selectTower('Tháp A', 'nhanluc')">Tháp A</button>
+        <button class="tab-btn" onclick="selectTower('Tháp B1', 'nhanluc')">Tháp B1</button>
+        <button class="tab-btn" onclick="selectTower('Tháp B2', 'nhanluc')">Tháp B2</button>
+    </div>
+
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label>CHỌN TẦNG</label>
+            <select id="nlSelectTang"></select>
+        </div>
+        <div class="filter-group">
+            <label>HẠNG MỤC</label>
+            <select id="nlSelectHangMuc" onchange="updateSubDropdowns('nhanluc')"></select>
+        </div>
+        <div class="filter-group">
+            <label>NHÀ THẦU</label>
+            <select id="nlSelectNhaThau"></select>
+        </div>
+        <div class="filter-group">
+            <label>CÔNG TÁC TRONG NGÀY</label>
+            <select id="nlSelectCongTac"></select>
+        </div>
+        <div class="filter-group">
+            <label>SỐ LƯỢNG CÔNG NHÂN</label>
+            <input type="number" id="inputNhanLuc" placeholder="Nhập số người...">
+        </div>
+        <div class="filter-group">
+            <label>GHI CHÚ</label>
+            <input type="text" id="nlInputGhiChu" placeholder="Nhập ghi chú...">
+        </div>
+        <div class="submit-container">
+            <button class="ok-btn" onclick="addNhanLucRow()">OK</button>
+        </div>
+    </div>
+
+    <div class="summary-box">
+        <div>TỔNG SỐ LƯỢNG CÔNG NHÂN:</div>
+        <div id="totalNhanLuc" style="color: var(--accent-color);">0 công nhân</div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Tầng</th>
+                    <th>Hạng mục</th>
+                    <th>Nhà thầu</th>
+                    <th>Công tác trong ngày</th>
+                    <th>Số lượng công nhân</th>
+                    <th>Ghi chú</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="nlTableBody"></tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+        <button class="send-btn" onclick="sendData('nhanluc')">GỬI DỮ LIỆU</button>
+    </div>
+</div>
+
+<!-- ================= TAB 2: BÁO CÁO CUỐI NGÀY ================= -->
+<div id="viewBaoCao" class="section-view">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="selectTower('Tháp A', 'baocao')">Tháp A</button>
+        <button class="tab-btn" onclick="selectTower('Tháp B1', 'baocao')">Tháp B1</button>
+        <button class="tab-btn" onclick="selectTower('Tháp B2', 'baocao')">Tháp B2</button>
+    </div>
+
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label>CHỌN TẦNG</label>
+            <select id="bcSelectTang"></select>
+        </div>
+        <div class="filter-group">
+            <label>HẠNG MỤC</label>
+            <select id="bcSelectHangMuc" onchange="updateSubDropdowns('baocao')"></select>
+        </div>
+        <div class="filter-group">
+            <label>NHÀ THẦU</label>
+            <select id="bcSelectNhaThau"></select>
+        </div>
+        <div class="filter-group">
+            <label>CHỌN CĂN</label>
+            <select id="bcSelectCan"></select>
+        </div>
+        <div class="filter-group">
+            <label>TRẠNG THÁI</label>
+            <select id="bcSelectTrangThai">
+                <option value="Đã xong">Đã xong</option>
+                <option value="Chưa xong">Chưa xong</option>
+                <option value="1 phần">1 phần</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>GHI CHÚ</label>
+            <input type="text" id="bcInputGhiChu" placeholder="Nhập ghi chú...">
+        </div>
+        <div class="submit-container">
+            <button class="ok-btn" onclick="addBaoCaoRow()">OK</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Tháp & Tầng</th>
+                    <th>Hạng mục</th>
+                    <th>Nhà thầu</th>
+                    <th>Căn</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="bcTableBody"></tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+        <button class="send-btn" onclick="sendData('baocao')">GỬI BÁO CÁO</button>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
+
+    const database = {
+        "Tháp A": [
+            {
+                hangMuc: "Lắp đặt lan can", 
+                nhaThau: "BÁN VIỆT", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
+            },
+            {
+                hangMuc: "Nhôm kính", 
+                nhaThau: "VIỆT ANH", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+            },
+            {
+                hangMuc: "Vách kính phòng tắm", 
+                nhaThau: "NHẬT KHOA", 
+                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone"]
+            }
+        ],
+        "Tháp B1": [
+            {
+                hangMuc: "Lắp đặt lan can", 
+                nhaThau: "BÁN VIỆT", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
+            },
+            {
+                hangMuc: "Nhôm kính", 
+                nhaThau: "THÁI LONG", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+            },
+            {
+                hangMuc: "Vách kính phòng tắm", 
+                nhaThau: "THÁI LONG", 
+                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone"]
+            }
+        ],
+        "Tháp B2": [
+            {
+                hangMuc: "Lắp đặt lan can", 
+                nhaThau: "BÁN VIỆT", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh lan can"]
+            },
+            {
+                hangMuc: "Nhôm kính", 
+                nhaThau: "HƯNG GIA TUỆ", 
+                congTac: ["VẬN CHUYỂN VẬT TƯ", "LẬP KHUNG PHỤ", "BƠM VỮA", "LẮP KHUNG CHÍNH", "LẮP RON", "BÁN KEO SILICONE", "VỆ SINH"]
+            },
+            {
+                hangMuc: "Vách kính phòng tắm", 
+                nhaThau: "CAO TRUNG NGHĨA", 
+                congTac: ["vận chuyển vật tư", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bán Silicone"]
+            }
+        ]
+    };
+
+    const towerConfigs = {
+        "Tháp A": 14,
+        "Tháp B1": 7,
+        "Tháp B2": 14
+    };
+
+    let currentTowerNL = "Tháp A";
+    let currentTowerBC = "Tháp A";
+
+    function switchMainTab(tabName) {
+        document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+
+        if(tabName === 'nhanluc') {
+            document.querySelectorAll('.main-tab-btn')[0].classList.add('active');
+            document.getElementById('viewNhanLuc').classList.add('active');
+        } else {
+            document.querySelectorAll('.main-tab-btn')[1].classList.add('active');
+            document.getElementById('viewBaoCao').classList.add('active');
+        }
+    }
+
+    function initForm() {
+        const nlTang = document.getElementById('nlSelectTang');
+        const bcTang = document.getElementById('bcSelectTang');
+        nlTang.innerHTML = "";
+        bcTang.innerHTML = "";
+        for (let i = 8; i <= 38; i++) {
+            nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
+            bcTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
+        }
+        updateDropdowns('nhanluc');
+        updateDropdowns('baocao');
+        loadDataFromGoogleSheets();
+    }
+
+    function loadDataFromGoogleSheets() {
+        fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+            const nlBody = document.getElementById('nlTableBody');
+            nlBody.innerHTML = "";
+            if(data.nhanLuc) {
+                data.nhanLuc.forEach(row => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.ngay}</td>
+                        <td>${row.tang}</td>
+                        <td>${row.hangMuc}</td>
+                        <td>${row.nhaThau}</td>
+                        <td>${row.congTac}</td>
+                        <td class="col-nhanluc" data-val="${row.soLuong}">${row.soLuong} công nhân</td>
+                        <td>${row.ghiChu}</td>
+                        <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td>
+                    `;
+                    nlBody.prepend(tr);
+                });
+                updateTotal();
+            }
+
+            const bcBody = document.getElementById('bcTableBody');
+            bcBody.innerHTML = "";
+            if(data.baoCao) {
+                data.baoCao.forEach(row => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.ngay}</td>
+                        <td>${row.thapTang}</td>
+                        <td>${row.hangMuc}</td>
+                        <td>${row.nhaThau}</td>
+                        <td>${row.can}</td>
+                        <td><b>${row.trangThai}</b></td>
+                        <td>${row.ghiChu}</td>
+                        <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+                    `;
+                    bcBody.prepend(tr);
+                });
+            }
+        })
+        .catch(err => console.log("Lỗi tải dữ liệu chung:", err));
+    }
+
+    function selectTower(towerName, mode) {
+        if(mode === 'nhanluc') {
+            currentTowerNL = towerName;
+            const container = document.getElementById('viewNhanLuc');
+            container.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === towerName) btn.classList.add('active');
+            });
+            updateDropdowns('nhanluc');
+        } else {
+            currentTowerBC = towerName;
+            const container = document.getElementById('viewBaoCao');
+            container.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === towerName) btn.classList.add('active');
+            });
+            updateDropdowns('baocao');
+        }
+    }
+
+    function updateDropdowns(mode) {
+        if(mode === 'nhanluc') {
+            const list = database[currentTowerNL];
+            const hmSelect = document.getElementById('nlSelectHangMuc');
+            hmSelect.innerHTML = "";
+            list.forEach(item => {
+                hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
+            });
+            updateSubDropdowns('nhanluc');
+        } else {
+            const list = database[currentTowerBC];
+            const hmSelect = document.getElementById('bcSelectHangMuc');
+            hmSelect.innerHTML = "";
+            list.forEach(item => {
+                hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
+            });
+            
+            const canSelect = document.getElementById('bcSelectCan');
+            canSelect.innerHTML = "";
+            const totalCans = towerConfigs[currentTowerBC] || 14;
+            for(let c = 1; c <= totalCans; c++) {
+                canSelect.innerHTML += `<option value="Căn ${c}">Căn ${c}</option>`;
+            }
+
+            updateSubDropdowns('baocao');
+        }
+    }
+
+    function updateSubDropdowns(mode) {
+        if(mode === 'nhanluc') {
+            const selectedHM = document.getElementById('nlSelectHangMuc').value;
+            const found = database[currentTowerNL].find(item => item.hangMuc === selectedHM);
+            if (found) {
+                document.getElementById('nlSelectNhaThau').innerHTML = `<option value="${found.nhaThau}">${found.nhaThau}</option>`;
+                const ctSelect = document.getElementById('nlSelectCongTac');
+                ctSelect.innerHTML = "";
+                found.congTac.forEach(ct => {
+                    ctSelect.innerHTML += `<option value="${ct}">${ct}</option>`;
+                });
+            }
+        } else {
+            const selectedHM = document.getElementById('bcSelectHangMuc').value;
+            const found = database[currentTowerBC].find(item => item.hangMuc === selectedHM);
+            if (found) {
+                document.getElementById('bcSelectNhaThau').innerHTML = `<option value="${found.nhaThau}">${found.nhaThau}</option>`;
+            }
+        }
+    }
+
+    function addNhanLucRow() {
+        const tang = document.getElementById('nlSelectTang').value;
+        const hangmuc = document.getElementById('nlSelectHangMuc').value;
+        const nhathau = document.getElementById('nlSelectNhaThau').value;
+        const congtac = document.getElementById('nlSelectCongTac').value;
+        const nhanlucVal = document.getElementById('inputNhanLuc').value;
+        const ghichu = document.getElementById('nlInputGhiChu').value || "Không có";
+
+        if(!nhanlucVal || isNaN(nhanlucVal)) {
+            alert('Vui lòng nhập số lượng công nhân hợp lệ!');
+            return;
+        }
+
+        const nhanluc = parseInt(nhanlucVal);
+        const tbody = document.getElementById('nlTableBody');
+        const currentDate = new Date().toLocaleDateString('vi-VN');
+        
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${currentDate}</td>
+            <td>${tang} - ${currentTowerNL}</td>
+            <td>${hangmuc}</td>
+            <td>${nhathau}</td>
+            <td>${congtac}</td>
+            <td class="col-nhanluc" data-val="${nhanluc}">${nhanluc} công nhân</td>
+            <td>${ghichu}</td>
+            <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td>
+        `;
+        tbody.prepend(tr);
+        document.getElementById('inputNhanLuc').value = '';
+        document.getElementById('nlInputGhiChu').value = '';
+        updateTotal();
+    }
+
+    function addBaoCaoRow() {
+        const tang = document.getElementById('bcSelectTang').value;
+        const hangmuc = document.getElementById('bcSelectHangMuc').value;
+        const nhathau = document.getElementById('bcSelectNhaThau').value;
+        const can = document.getElementById('bcSelectCan').value;
+        const trangthai = document.getElementById('bcSelectTrangThai').value;
+        const ghichu = document.getElementById('bcInputGhiChu').value || "Không có";
+
+        const tbody = document.getElementById('bcTableBody');
+        const currentDate = new Date().toLocaleDateString('vi-VN');
+        
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${currentDate}</td>
+            <td>${currentTowerBC} - ${tang}</td>
+            <td>${hangmuc}</td>
+            <td>${nhathau}</td>
+            <td>${can}</td>
+            <td><b>${trangthai}</b></td>
+            <td>${ghichu}</td>
+            <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+        `;
+        tbody.prepend(tr);
+        document.getElementById('bcInputGhiChu').value = '';
+    }
+
+    function deleteRow(btn, mode) {
+        btn.closest('tr').remove();
+        if(mode === 'nhanluc') updateTotal();
+    }
+
+    function updateTotal() {
+        const rows = document.querySelectorAll('#nlTableBody tr');
+        let sum = 0;
+        rows.forEach(row => {
+            const cell = row.querySelector('.col-nhanluc');
+            if (cell) {
+                sum += parseInt(cell.getAttribute('data-val')) || 0;
+            }
+        });
+        document.getElementById('totalNhanLuc').innerText = sum + " công nhân";
+    }
+
+    function sendData(mode) {
+        const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
+        const rows = document.querySelectorAll(`#${tbodyId} tr`);
+        
+        if (rows.length === 0) {
+            alert('Chưa có dữ liệu nào để gửi!');
+            return;
+        }
+
+        let payloadData = [];
+
+        if (mode === 'nhanluc') {
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                payloadData.push({
+                    ngay: cols[0].innerText,
+                    tang: cols[1].innerText,
+                    hangMuc: cols[2].innerText,
+                    nhaThau: cols[3].innerText,
+                    congTac: cols[4].innerText,
+                    soLuong: cols[5].getAttribute('data-val'),
+                    ghiChu: cols[6].innerText
+                });
+            });
+        } else {
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                payloadData.push({
+                    ngay: cols[0].innerText,
+                    thapTang: cols[1].innerText,
+                    hangMuc: cols[2].innerText,
+                    nhaThau: cols[3].innerText,
+                    can: cols[4].innerText,
+                    trangThai: cols[5].innerText,
+                    ghiChu: cols[6].innerText
+                });
+            });
+        }
+
+        const payload = {
+            type: mode,
+            rows: payloadData
+        };
+
+        alert('Đang gửi dữ liệu lên Google Sheets...');
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            alert('Đã đồng bộ thành công lên Google Sheets!');
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra khi gửi dữ liệu!');
+        });
+    }
+
+    window.onload = initForm;
+</script>
+</body>
+</html>
