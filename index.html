@@ -5,8 +5,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        // Mỗi lần bạn sửa code xong, hãy tăng số phiên bản này lên (VD: v2, v3, v4...)
-        const APP_VERSION = "2026.08.23-v1"; 
+        const APP_VERSION = "2026.08.23-v3";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -98,7 +97,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .filter-group label {
             display: block;
@@ -158,6 +157,20 @@
             cursor: pointer;
             font-size: 12px;
         }
+        .clear-all-btn {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .clear-all-btn:hover {
+            background-color: #dc2626;
+        }
 
         .summary-box {
             background-color: var(--card-bg);
@@ -170,6 +183,11 @@
             align-items: center;
             font-size: 16px;
             font-weight: bold;
+        }
+        .summary-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         /* Dashboard Styles */
@@ -304,8 +322,10 @@
     </div>
 
     <div class="summary-box">
-        <div>TỔNG SỐ LƯỢNG CÔNG NHÂN:</div>
-        <div id="totalNhanLuc" style="color: var(--accent-color);">0 công nhân</div>
+        <div class="summary-left">
+            <div>TỔNG SỐ LƯỢNG CÔNG NHÂN: <span id="totalNhanLuc" style="color: var(--accent-color); margin-left: 10px;">0 công nhân</span></div>
+        </div>
+        <button class="clear-all-btn" onclick="clearAllData('nhanluc')">Xóa hết dữ liệu</button>
     </div>
 
     <div class="table-container">
@@ -373,6 +393,13 @@
         </div>
     </div>
 
+    <div class="summary-box">
+        <div class="summary-left">
+            <div>DANH SÁCH BÁO CÁO CUỐI NGÀY</div>
+        </div>
+        <button class="clear-all-btn" onclick="clearAllData('baocao')">Xóa hết dữ liệu</button>
+    </div>
+
     <div class="table-container">
         <table>
             <thead>
@@ -399,25 +426,23 @@
 <!-- ================= TAB 3: DASHBOARD TỔNG QUAN ================= -->
 <div id="viewDashboard" class="section-view">
     <div id="dashboardContainer" class="dashboard-container">
-        <!-- Dữ liệu chi tiết theo tháp, nhà thầu, hạng mục (chỉ hiện công nhân) -->
+        <!-- Dữ liệu chi tiết theo tháp, nhà thầu, hạng mục -->
     </div>
 </div>
 
 <script>
-    // Hàm chuẩn hóa định dạng ngày tháng hiển thị
-function formatDate(dateStr) {
-    if (!dateStr) return "";
-    // Nếu ngày trả về dạng chuẩn ISO/UTC
-    let d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-        let day = String(d.getDate()).padStart(2, '0');
-        let month = String(d.getMonth() + 1).padStart(2, '0');
-        let year = d.getFullYear();
-        // Kiểm tra xem năm có hợp lý không (tránh trường hợp lỗi lệch múi giờ)
-        return `${day}/${month}/${year}`;
+    function formatDate(dateStr) {
+        if (!dateStr) return "";
+        let d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = d.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        return dateStr;
     }
-    return dateStr;
-}
+
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
 
     const database = {
@@ -505,6 +530,11 @@ function formatDate(dateStr) {
         const bcTang = document.getElementById('bcSelectTang');
         nlTang.innerHTML = "";
         bcTang.innerHTML = "";
+        
+        // Thêm Tầng 1 theo yêu cầu
+        nlTang.innerHTML += `<option value="Tầng 1">Tầng 1</option>`;
+        bcTang.innerHTML += `<option value="Tầng 1">Tầng 1</option>`;
+
         for (let i = 8; i <= 38; i++) {
             nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
             bcTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
@@ -519,26 +549,23 @@ function formatDate(dateStr) {
         .then(response => response.json())
         .then(data => {
             const nlBody = document.getElementById('nlTableBody');
-            const bcBody = document.getElementById('bcTableBody'); // Thêm dòng này để xử lý bảng báo cáo
+            const bcBody = document.getElementById('bcTableBody');
             
             nlBody.innerHTML = "";
-            bcBody.innerHTML = ""; // Xóa dữ liệu cũ của bảng báo cáo
+            bcBody.innerHTML = "";
 
-            // Lấy ngày hiện tại theo định dạng DD/MM/YYYY để so sánh
             const today = new Date();
             const dayCurrent = String(today.getDate()).padStart(2, '0');
             const monthCurrent = String(today.getMonth() + 1).padStart(2, '0');
             const yearCurrent = today.getFullYear();
             const todayStr = `${dayCurrent}/${monthCurrent}/${yearCurrent}`;
 
-            // Xử lý dữ liệu Nhân Lực (chỉ lấy ngày hôm nay)
             if(data.nhanLuc) {
                 data.nhanLuc.forEach(row => {
                     let formattedDate = formatDate(row.ngay);
-                    
-                    // Lọc chỉ hiển thị ngày hiện tại (hoặc bạn có thể bỏ điều kiện này nếu muốn hiển thị tất cả)
                     if (formattedDate === todayStr) {
                         let tr = document.createElement('tr');
+                        tr.setAttribute('data-saved', 'true');
                         tr.innerHTML = `
                             <td>${formattedDate}</td>
                             <td>${row.tang}</td>
@@ -555,13 +582,12 @@ function formatDate(dateStr) {
                 updateTotal();
             }
 
-            // Xử lý dữ liệu Báo Cáo Cuối Ngày (chỉ lấy ngày hôm nay)
             if(data.baoCao) {
                 data.baoCao.forEach(row => {
                     let formattedDate = formatDate(row.ngay);
-                    
                     if (formattedDate === todayStr) {
                         let tr = document.createElement('tr');
+                        tr.setAttribute('data-saved', 'true');
                         tr.innerHTML = `
                             <td>${formattedDate}</td>
                             <td>${row.thapTang}</td>
@@ -718,6 +744,15 @@ function formatDate(dateStr) {
         updateDashboardStats();
     }
 
+    function clearAllData(mode) {
+        if(confirm('Bạn có chắc chắn muốn xóa hết toàn bộ danh sách hiện tại không?')) {
+            const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
+            document.getElementById(tbodyId).innerHTML = "";
+            if(mode === 'nhanluc') updateTotal();
+            updateDashboardStats();
+        }
+    }
+
     function updateTotal() {
         const rows = document.querySelectorAll('#nlTableBody tr');
         let sum = 0;
@@ -793,12 +828,12 @@ function formatDate(dateStr) {
         });
 
         if(container.children.length === 0) {
-            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu thống kê nào được ghi nhận.</div>`;
+            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">Chưa có dữ liệu thống kê nào được ghi nhận trong ngày hôm nay.</div>`;
         }
     }
-function sendData(mode) {
+
+    function sendData(mode) {
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
-        // Chỉ lấy những dòng chưa được lưu/gửi (những dòng người dùng mới thêm trực tiếp trên web)
         const rows = document.querySelectorAll(`#${tbodyId} tr:not([data-saved="true"])`);
         
         if (rows.length === 0) {
@@ -853,7 +888,7 @@ function sendData(mode) {
         })
         .then(() => {
             alert('Đã đồng bộ thành công!');
-            loadDataFromGoogleSheets(); // Tải lại bảng để đánh dấu các dòng vừa gửi là dữ liệu cũ
+            loadDataFromGoogleSheets(); 
         })
         .catch(error => {
             console.error('Lỗi:', error);
