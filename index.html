@@ -1389,7 +1389,7 @@
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
         const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
         const rows = mode === 'baocao'
-            ? Array.from(candidateRows).filter(row => !row.dataset.saved || row.dataset.original !== JSON.stringify(getReportRowValues(row)))
+            ? Array.from(candidateRows)
             : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
         
         if (rows.length === 0) {
