@@ -2,11 +2,10 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.28-v21";  
+        const APP_VERSION = "2026.08.28-v14";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -14,46 +13,20 @@
     </script>
     <style>
         :root {
-            --bg-color: #071a2b;
-            --card-bg: #0f2a40;
-            --border-color: #24506b;
-            --accent-color: #67e8f9;
-            --text-main: #e0f2fe;
-            --text-muted: #9cc4d8;
-            --hover-color: #173c56;
-            --input-bg: #091f32;
-            --header-bg: #0b2237;
-            --title-color: #f0f9ff;
-            --input-text: #e0f2fe;
-            --page-glow: rgba(56, 189, 248, 0.13);
-        }
-        body.light-mode {
-            --bg-color: #eaf6fb;
-            --card-bg: #f8fdff;
-            --border-color: #b8dbe9;
-            --accent-color: #0284c7;
-            --text-main: #17324d;
-            --text-muted: #58738a;
-            --hover-color: #dff3fa;
-            --input-bg: #f2faff;
-            --header-bg: #dff3fa;
-            --title-color: #12304a;
-            --input-text: #17324d;
-            --page-glow: rgba(14, 165, 233, 0.13);
+            --bg-color: #0b131a;
+            --card-bg: #111d28;
+            --border-color: #1f2f3d;
+            --accent-color: #00d2ff;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --hover-color: #162838;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            background-image:
-                linear-gradient(135deg, var(--page-glow), transparent 38%),
-                linear-gradient(315deg, rgba(255, 255, 255, 0.035), transparent 42%),
-                linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148, 163, 184, 0.045) 1px, transparent 1px);
-            background-size: auto, auto, 32px 32px, 32px 32px;
             color: var(--text-main);
             margin: 0;
             padding: 20px;
-            transition: background-color 0.2s, color 0.2s;
         }
         .header {
             margin-bottom: 25px;
@@ -62,26 +35,13 @@
         }
         .header h1 {
             font-size: 24px;
-            color: var(--title-color);
+            color: white;
             margin: 0 0 5px 0;
         }
         .header p {
             color: var(--text-muted);
             margin: 0;
             font-size: 14px;
-        }
-        .theme-toggle {
-            float: right;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .theme-toggle:hover {
-            border-color: var(--accent-color);
         }
         
         .main-tabs {
@@ -91,7 +51,7 @@
             flex-wrap: wrap;
         }
         .main-tab-btn {
-            background-color: var(--header-bg);
+            background-color: #0e1721;
             border: 2px solid var(--border-color);
             color: var(--text-muted);
             padding: 12px 25px;
@@ -148,9 +108,9 @@
         }
         .filter-group select, .filter-group input {
             width: 100%;
-            background: var(--input-bg);
+            background: #0b131a;
             border: 1px solid var(--border-color);
-            color: var(--input-text);
+            color: white;
             padding: 10px;
             border-radius: 6px;
             box-sizing: border-box;
@@ -256,14 +216,14 @@
             gap: 15px;
         }
         .dash-sub-card {
-            background-color: var(--input-bg);
+            background-color: #0b131a;
             border: 1px solid var(--border-color);
             padding: 15px;
             border-radius: 6px;
         }
         .dash-sub-card h4 {
             margin: 0 0 8px 0;
-            color: var(--title-color);
+            color: white;
             font-size: 15px;
         }
         .dash-sub-card p {
@@ -293,7 +253,7 @@
             border-bottom: 1px solid var(--border-color);
         }
         th {
-            background-color: var(--header-bg);
+            background-color: #0e1721;
             color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
@@ -339,9 +299,9 @@
         .form-phat-sinh-container .form-control {
             width: 100%;
             box-sizing: border-box;
-            background: var(--input-bg);
+            background: #0b131a;
             border: 1px solid var(--border-color);
-            color: var(--input-text);
+            color: white;
             padding: 10px 11px;
             border-radius: 6px;
             font: inherit;
@@ -379,9 +339,9 @@
         #phatSinhTableBody input {
             width: 100%;
             box-sizing: border-box;
-            background: var(--input-bg);
+            background: #0b131a;
             border: 1px solid var(--border-color);
-            color: var(--input-text);
+            color: white;
             padding: 6px;
             border-radius: 4px;
         }
@@ -482,9 +442,9 @@
         .handover-status.active { background: #164e63; color: #67e8f9; }
         .handover-status.delayed { background: #7f1d1d; color: #fca5a5; }
         .handover-table select {
-            background: var(--input-bg);
+            background: #0b131a;
             border: 1px solid var(--border-color);
-            color: var(--input-text);
+            color: white;
             padding: 7px;
             border-radius: 4px;
         }
@@ -508,9 +468,9 @@
             width: 260px;
             max-width: 100%;
             box-sizing: border-box;
-            background: var(--input-bg);
+            background: #0b131a;
             border: 1px solid var(--border-color);
-            color: var(--input-text);
+            color: white;
             padding: 10px 11px;
             border-radius: 6px;
             font: inherit;
@@ -527,322 +487,11 @@
                 width: 100%;
             }
         }
-
-        /* Visual refresh */
-        body {
-            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
-            background-image:
-                linear-gradient(120deg, var(--page-glow), transparent 44%),
-                linear-gradient(300deg, rgba(56, 189, 248, 0.08), transparent 38%),
-                linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
-            background-size: auto, auto, 36px 36px, 36px 36px;
-        }
-        .header {
-            position: relative;
-            padding: 24px 28px 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            background: linear-gradient(120deg, var(--card-bg), var(--header-bg));
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
-            overflow: hidden;
-        }
-        .header::after {
-            content: "";
-            position: absolute;
-            right: -40px;
-            top: -70px;
-            width: 220px;
-            height: 150px;
-            border: 24px solid rgba(14, 165, 233, 0.14);
-            transform: rotate(-24deg);
-        }
-        .header h1 {
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.5px;
-            font-size: 28px;
-        }
-        .header p {
-            position: relative;
-            z-index: 1;
-        }
-        .theme-toggle {
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
-        }
-        .main-tabs,
-        .tabs,
-        .report-contractor-tabs {
-            gap: 12px;
-        }
-        .main-tab-btn,
-        .tab-btn {
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
-        }
-        .main-tab-btn {
-            border-radius: 10px;
-            padding: 13px 24px;
-        }
-        .main-tab-btn.active,
-        .tab-btn.active,
-        .tab-btn:hover {
-            background: linear-gradient(135deg, var(--accent-color), #22d3ee);
-            box-shadow: 0 7px 16px rgba(8, 145, 178, 0.24);
-        }
-        .filter-panel,
-        .summary-box,
-        .form-phat-sinh-container,
-        .table-container,
-        .tower-section,
-        .handover-summary-card {
-            border-radius: 12px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-        }
-        .filter-panel,
-        .form-phat-sinh-container {
-            border-top: 3px solid var(--accent-color);
-        }
-        .summary-box {
-            border-left: 4px solid #38bdf8;
-        }
-        input:focus,
-        select:focus {
-            outline: 2px solid rgba(14, 165, 233, 0.28);
-            outline-offset: 1px;
-            border-color: var(--accent-color) !important;
-        }
-        th {
-            letter-spacing: 0.4px;
-            background: linear-gradient(135deg, var(--header-bg), var(--card-bg));
-        }
-        tbody tr:nth-child(even) {
-            background-color: rgba(14, 165, 233, 0.035);
-        }
-        tbody tr:hover {
-            background-color: var(--hover-color);
-        }
-        .delete-btn,
-        .clear-all-btn {
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
-        }
-        .send-btn {
-            background: linear-gradient(135deg, #059669, #10b981);
-            box-shadow: 0 7px 16px rgba(16, 185, 129, 0.24);
-        }
-        .send-btn:hover {
-            background: linear-gradient(135deg, #047857, #059669);
-        }
-        .tower-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .tower-title::before {
-            content: "";
-            display: inline-block;
-            width: 9px;
-            height: 9px;
-            background: #38bdf8;
-            border-radius: 2px;
-            transform: rotate(45deg);
-        }
-        @media (max-width: 700px) {
-            body {
-                padding: 10px;
-            }
-            .header {
-                padding: 18px 16px;
-                margin-bottom: 14px;
-            }
-            .header h1 {
-                padding-right: 60px;
-                font-size: 21px;
-                line-height: 1.25;
-            }
-            .main-tabs,
-            .tabs,
-            .report-contractor-tabs {
-                gap: 8px;
-                margin-bottom: 14px;
-            }
-            .main-tab-btn,
-            .tab-btn {
-                padding: 9px 12px;
-                font-size: 13px;
-            }
-            #viewBaoCao .table-container {
-                overflow: visible;
-                border: 0;
-                background: transparent;
-                box-shadow: none;
-            }
-            #viewBaoCao table,
-            #viewBaoCao tbody,
-            #viewBaoCao tr,
-            #viewBaoCao td {
-                display: block;
-                width: auto;
-            }
-            #viewBaoCao thead {
-                display: none;
-            }
-            #viewBaoCao tbody tr {
-                margin-bottom: 12px;
-                padding: 10px;
-                border: 1px solid var(--border-color);
-                border-radius: 10px;
-                background: var(--card-bg);
-                box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
-            }
-            #viewBaoCao tbody td {
-                display: grid;
-                grid-template-columns: 108px minmax(0, 1fr);
-                align-items: center;
-                gap: 8px;
-                padding: 7px 4px;
-                border-bottom: 1px solid var(--border-color);
-            }
-            #viewBaoCao tbody td:last-child {
-                border-bottom: 0;
-            }
-            #viewBaoCao tbody td::before {
-                color: var(--text-muted);
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-            }
-            #viewBaoCao tbody td:nth-child(1)::before { content: "Tháp / tầng"; }
-            #viewBaoCao tbody td:nth-child(2)::before { content: "Hạng mục"; }
-            #viewBaoCao tbody td:nth-child(3)::before { content: "Nhà thầu"; }
-            #viewBaoCao tbody td:nth-child(4)::before { content: "Công tác"; }
-            #viewBaoCao tbody td:nth-child(5)::before { content: "Căn"; }
-            #viewBaoCao tbody td:nth-child(6)::before { content: "% hoàn thành"; }
-            #viewBaoCao tbody td:nth-child(7)::before { content: "Trạng thái"; }
-            #viewBaoCao tbody td:nth-child(8)::before { content: "Ghi chú"; }
-            #viewBaoCao tbody td:nth-child(9)::before { content: "Thao tác"; }
-            #viewBaoCao tbody td:nth-child(5),
-            #viewBaoCao tbody td:nth-child(6),
-            #viewBaoCao tbody td:nth-child(8),
-            #viewBaoCao tbody td:nth-child(9) {
-                width: auto;
-            }
-            #viewBaoCao tbody .report-apartment,
-            #viewBaoCao tbody .report-progress,
-            #viewBaoCao tbody .report-note {
-                width: 100%;
-                min-width: 0;
-            }
-            #viewBaoCao tbody .status-toggle {
-                justify-self: start;
-            }
-            #viewBaoCao .form-phat-sinh-container {
-                grid-template-columns: 1fr;
-                padding: 14px;
-                gap: 10px;
-            }
-            #viewBaoCao .submit-container {
-                justify-content: stretch;
-            }
-            #viewBaoCao .btn-them-phatsinh,
-            #viewBaoCao .send-btn {
-                width: 100%;
-            }
-        }
-
-        /* Balanced end-of-day report layout */
-        #viewBaoCao .report-contractor-tabs {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            align-items: stretch;
-        }
-        #viewBaoCao .report-contractor-tabs .tab-btn {
-            width: 100%;
-            min-height: 42px;
-            padding: 10px 8px;
-        }
-        #viewBaoCao .sub-title {
-            color: var(--title-color);
-            font-size: 17px;
-            font-weight: 700;
-            padding-left: 12px;
-            border-left: 4px solid var(--accent-color);
-        }
-        #viewBaoCao .table-container {
-            overflow-x: auto;
-        }
-        #viewBaoCao table {
-            table-layout: fixed;
-            min-width: 980px;
-        }
-        #viewBaoCao th,
-        #viewBaoCao td {
-            vertical-align: middle;
-        }
-        #viewBaoCao th:nth-child(1),
-        #viewBaoCao td:nth-child(1) { width: 13%; }
-        #viewBaoCao th:nth-child(2),
-        #viewBaoCao td:nth-child(2) { width: 12%; }
-        #viewBaoCao th:nth-child(3),
-        #viewBaoCao td:nth-child(3) { width: 11%; }
-        #viewBaoCao th:nth-child(4),
-        #viewBaoCao td:nth-child(4) { width: 14%; }
-        #viewBaoCao th:nth-child(5),
-        #viewBaoCao td:nth-child(5) { width: 9%; }
-        #viewBaoCao th:nth-child(6),
-        #viewBaoCao td:nth-child(6) { width: 11%; }
-        #viewBaoCao th:nth-child(7),
-        #viewBaoCao td:nth-child(7) { width: 12%; }
-        #viewBaoCao th:nth-child(8),
-        #viewBaoCao td:nth-child(8) { width: 13%; }
-        #viewBaoCao th:nth-child(9),
-        #viewBaoCao td:nth-child(9) { width: 5%; }
-        #viewBaoCao td:nth-child(5),
-        #viewBaoCao td:nth-child(6) {
-            width: auto;
-        }
-        #viewBaoCao .report-apartment,
-        #viewBaoCao .report-progress {
-            width: 100%;
-            min-width: 0;
-        }
-        #viewBaoCao .report-note {
-            width: 100%;
-            min-width: 0;
-        }
-        #viewBaoCao td:nth-child(7),
-        #viewBaoCao td:nth-child(9),
-        #viewBaoCao th:nth-child(7),
-        #viewBaoCao th:nth-child(9) {
-            text-align: center;
-        }
-        #viewBaoCao .status-toggle {
-            justify-content: center;
-        }
-        #viewBaoCao .form-phat-sinh-container {
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-        }
-        #viewBaoCao .form-phat-sinh-container .btn-ok {
-            grid-column: span 1;
-        }
-        @media (max-width: 700px) {
-            #viewBaoCao .report-contractor-tabs {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            #viewBaoCao table {
-                min-width: 0;
-            }
-            #viewBaoCao .form-phat-sinh-container {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()">Sáng</button>
     <h1>HỆ THỐNG QUẢN LÝ NHÂN LỰC & THI CÔNG</h1>
     <p>Chọn tháp, tầng, hạng mục, nhà thầu và cập nhật dữ liệu hàng ngày</p>
 </div>
@@ -1209,17 +858,6 @@
     let handoverSheetRecords = {};
     let handoverUserIds = new Set();
     const sendingModes = new Set();
-
-    function applyTheme(theme) {
-        const isLight = theme === 'light';
-        document.body.classList.toggle('light-mode', isLight);
-        document.getElementById('themeToggle').innerText = isLight ? 'Tối' : 'Sáng';
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    }
-
-    function toggleTheme() {
-        applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
-    }
 
     function switchMainTab(tabName) {
         document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1863,10 +1501,7 @@
         }
     }
 
-    window.onload = () => {
-        applyTheme(localStorage.getItem('theme') || 'dark');
-        initForm();
-    };
+    window.onload = initForm;
 </script>
 </body>
 </html>
