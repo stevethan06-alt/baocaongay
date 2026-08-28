@@ -578,7 +578,7 @@
                     <th>Nhà thầu</th>
                     <th>Công tác</th>
                     <th>Nhân lực</th>
-                    <th>Kết quả đạt được</th>
+                    <th>% Hoàn thành</th>
                     <th>Trạng thái</th>
                     <th>Ghi chú báo cáo</th>
                     <th>Thao tác</th>
@@ -841,6 +841,7 @@
     let currentHandoverStatus = "Tất cả";
     let handoverSheetRecords = {};
     let handoverUserIds = new Set();
+    const sendingModes = new Set();
 
     function switchMainTab(tabName) {
         document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1376,6 +1377,15 @@
     }
 
     function sendData(mode) {
+        if (sendingModes.has(mode)) return;
+        sendingModes.add(mode);
+        const sendButton = document.querySelector(`.send-btn[onclick="sendData('${mode}')"]`);
+        if (sendButton) {
+            sendButton.disabled = true;
+            sendButton.dataset.originalText = sendButton.innerText;
+            sendButton.innerText = 'ĐANG GỬI...';
+        }
+
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
         const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
         const rows = mode === 'baocao'
@@ -1384,6 +1394,7 @@
         
         if (rows.length === 0) {
             alert('Không có dữ liệu mới nào để gửi!');
+            finishSending(mode, sendButton);
             return;
         }
 
@@ -1430,7 +1441,16 @@
         .catch(error => {
             console.error('Lỗi:', error);
             alert('Có lỗi xảy ra khi gửi dữ liệu!');
-        });
+        })
+        .finally(() => finishSending(mode, sendButton));
+    }
+
+    function finishSending(mode, sendButton) {
+        sendingModes.delete(mode);
+        if (sendButton) {
+            sendButton.disabled = false;
+            sendButton.innerText = sendButton.dataset.originalText || 'GỬI DỮ LIỆU';
+        }
     }
 
     window.onload = initForm;
