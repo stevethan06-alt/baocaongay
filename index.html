@@ -6,7 +6,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.28-v20";  
+        const APP_VERSION = "2026.08.28-v21";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -748,6 +748,93 @@
             #viewBaoCao .btn-them-phatsinh,
             #viewBaoCao .send-btn {
                 width: 100%;
+            }
+        }
+
+        /* Balanced end-of-day report layout */
+        #viewBaoCao .report-contractor-tabs {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            align-items: stretch;
+        }
+        #viewBaoCao .report-contractor-tabs .tab-btn {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 8px;
+        }
+        #viewBaoCao .sub-title {
+            color: var(--title-color);
+            font-size: 17px;
+            font-weight: 700;
+            padding-left: 12px;
+            border-left: 4px solid var(--accent-color);
+        }
+        #viewBaoCao .table-container {
+            overflow-x: auto;
+        }
+        #viewBaoCao table {
+            table-layout: fixed;
+            min-width: 980px;
+        }
+        #viewBaoCao th,
+        #viewBaoCao td {
+            vertical-align: middle;
+        }
+        #viewBaoCao th:nth-child(1),
+        #viewBaoCao td:nth-child(1) { width: 13%; }
+        #viewBaoCao th:nth-child(2),
+        #viewBaoCao td:nth-child(2) { width: 12%; }
+        #viewBaoCao th:nth-child(3),
+        #viewBaoCao td:nth-child(3) { width: 11%; }
+        #viewBaoCao th:nth-child(4),
+        #viewBaoCao td:nth-child(4) { width: 14%; }
+        #viewBaoCao th:nth-child(5),
+        #viewBaoCao td:nth-child(5) { width: 9%; }
+        #viewBaoCao th:nth-child(6),
+        #viewBaoCao td:nth-child(6) { width: 11%; }
+        #viewBaoCao th:nth-child(7),
+        #viewBaoCao td:nth-child(7) { width: 12%; }
+        #viewBaoCao th:nth-child(8),
+        #viewBaoCao td:nth-child(8) { width: 13%; }
+        #viewBaoCao th:nth-child(9),
+        #viewBaoCao td:nth-child(9) { width: 5%; }
+        #viewBaoCao td:nth-child(5),
+        #viewBaoCao td:nth-child(6) {
+            width: auto;
+        }
+        #viewBaoCao .report-apartment,
+        #viewBaoCao .report-progress {
+            width: 100%;
+            min-width: 0;
+        }
+        #viewBaoCao .report-note {
+            width: 100%;
+            min-width: 0;
+        }
+        #viewBaoCao td:nth-child(7),
+        #viewBaoCao td:nth-child(9),
+        #viewBaoCao th:nth-child(7),
+        #viewBaoCao th:nth-child(9) {
+            text-align: center;
+        }
+        #viewBaoCao .status-toggle {
+            justify-content: center;
+        }
+        #viewBaoCao .form-phat-sinh-container {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+        #viewBaoCao .form-phat-sinh-container .btn-ok {
+            grid-column: span 1;
+        }
+        @media (max-width: 700px) {
+            #viewBaoCao .report-contractor-tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            #viewBaoCao table {
+                min-width: 0;
+            }
+            #viewBaoCao .form-phat-sinh-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
