@@ -5,7 +5,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.26-v10";  
+        const APP_VERSION = "2026.08.28-v11";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -1056,6 +1056,7 @@
                 <td><input type="text" placeholder="Ghi chú báo cáo..." class="report-note"></td>
                 <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
             `;
+            reportRow.dataset.original = JSON.stringify(getReportRowValues(reportRow));
             reportBody.appendChild(reportRow);
         });
     }
@@ -1127,6 +1128,7 @@
             <td><input type="text" placeholder="Ghi chú báo cáo..." class="report-note"></td>
             <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
         `;
+        row.dataset.original = JSON.stringify(getReportRowValues(row));
         const reportBody = document.getElementById('reportTableBody');
         const matchingRow = Array.from(reportBody.rows).find(reportRow => reportRow.cells[2]?.innerText.trim() === nhaThau);
         if (matchingRow) reportBody.insertBefore(row, matchingRow);
@@ -1405,7 +1407,7 @@
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
         const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
         const rows = mode === 'baocao'
-            ? Array.from(candidateRows).filter(row => row.dataset.userModified === 'true')
+            ? Array.from(candidateRows).filter(row => row.dataset.userModified === 'true' || row.dataset.original !== JSON.stringify(getReportRowValues(row)))
             : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
         
         if (rows.length === 0) {
