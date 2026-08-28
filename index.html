@@ -5,7 +5,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.23-v3";  
+        const APP_VERSION = "2026.08.26-v10";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -268,6 +268,209 @@
         .section-view.active {
             display: block;
         }
+        .report-contractor-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .form-phat-sinh-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            align-items: end;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .form-phat-sinh-container .form-group {
+            min-width: 0;
+        }
+        .form-phat-sinh-container label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .form-phat-sinh-container .form-control {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0b131a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px 11px;
+            border-radius: 6px;
+            font: inherit;
+            min-width: 0;
+        }
+        .form-phat-sinh-container .btn-ok {
+            background-color: #3b82f6;
+            color: white;
+            border: 0;
+            height: 40px;
+            min-width: 82px;
+            padding: 0 22px;
+            margin: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .btn-them-phatsinh {
+            background-color: #3b82f6;
+            color: white;
+            border: 0;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .btn-them-phatsinh:hover,
+        .form-phat-sinh-container .btn-ok:hover {
+            background-color: #2563eb;
+        }
+        #reportTableBody input,
+        #reportTableBody select,
+        #phatSinhTableBody input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0b131a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+        }
+        .status-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            color: #f87171;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-toggle input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .status-toggle .toggle-track {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 22px;
+            background: #7f1d1d;
+            border: 1px solid #ef4444;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .status-toggle .toggle-track::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .status-toggle input:checked + .toggle-track {
+            background: #047857;
+            border-color: #10b981;
+        }
+        .status-toggle input:checked + .toggle-track::after {
+            transform: translateX(20px);
+        }
+        .status-toggle input:checked ~ .status-label {
+            color: #34d399;
+        }
+        .handover-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .handover-summary-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 18px;
+        }
+        .handover-summary-card strong {
+            display: block;
+            color: white;
+            font-size: 24px;
+            margin-top: 5px;
+        }
+        .handover-summary-card span {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .handover-status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .handover-status.completed { background: #064e3b; color: #6ee7b7; }
+        .handover-status.active { background: #164e63; color: #67e8f9; }
+        .handover-status.delayed { background: #7f1d1d; color: #fca5a5; }
+        .handover-table select {
+            background: #0b131a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 7px;
+            border-radius: 4px;
+        }
+        .handover-user-id-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+            padding: 12px 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .handover-user-id-row label {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .handover-user-id-row input {
+            width: 260px;
+            max-width: 100%;
+            box-sizing: border-box;
+            background: #0b131a;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px 11px;
+            border-radius: 6px;
+            font: inherit;
+        }
+        @media (max-width: 800px) {
+            .handover-summary { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 800px) {
+            .form-phat-sinh-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+            .form-phat-sinh-container .btn-ok {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -281,6 +484,7 @@
     <button class="main-tab-btn active" onclick="switchMainTab('nhanluc')">Quản Lý Nhân Lực</button>
     <button class="main-tab-btn" onclick="switchMainTab('baocao')">Báo Cáo Cuối Ngày</button>
     <button class="main-tab-btn" onclick="switchMainTab('dashboard')">Dashboard Tổng Quan</button>
+    <button class="main-tab-btn" onclick="switchMainTab('handover')">Tiến Độ Giao Nhà</button>
 </div>
 
 <!-- ================= TAB 1: QUẢN LÝ NHÂN LỰC ================= -->
@@ -353,73 +557,119 @@
 
 <!-- ================= TAB 2: BÁO CÁO CUỐI NGÀY ================= -->
 <div id="viewBaoCao" class="section-view">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="selectTower('Tháp A', 'baocao')">Tháp A</button>
-        <button class="tab-btn" onclick="selectTower('Tháp B1', 'baocao')">Tháp B1</button>
-        <button class="tab-btn" onclick="selectTower('Tháp B2', 'baocao')">Tháp B2</button>
+    <div class="report-contractor-tabs" id="reportContractorTabs">
+        <button class="tab-btn active" onclick="filterReportByContractor('Tất cả')">Tất cả</button>
+        <button class="tab-btn" onclick="filterReportByContractor('BẢN VIỆT')">BẢN VIỆT</button>
+        <button class="tab-btn" onclick="filterReportByContractor('VIỆT ANH')">VIỆT ANH</button>
+        <button class="tab-btn" onclick="filterReportByContractor('NHẬT KHOA')">NHẬT KHOA</button>
+        <button class="tab-btn" onclick="filterReportByContractor('THÁI LONG')">THÁI LONG</button>
+        <button class="tab-btn" onclick="filterReportByContractor('CAO TRUNG NGHĨA')">CAO TRUNG NGHĨA</button>
+        <button class="tab-btn" onclick="filterReportByContractor('HƯNG GIA TUỆ')">HƯNG GIA TUỆ</button>
     </div>
 
-    <div class="filter-panel">
-        <div class="filter-group">
-            <label>CHỌN TẦNG</label>
-            <select id="bcSelectTang"></select>
-        </div>
-        <div class="filter-group">
-            <label>HẠNG MỤC</label>
-            <select id="bcSelectHangMuc" onchange="updateSubDropdowns('baocao')"></select>
-        </div>
-        <div class="filter-group">
-            <label>NHÀ THẦU</label>
-            <select id="bcSelectNhaThau"></select>
-        </div>
-        <div class="filter-group">
-            <label>CHỌN CĂN</label>
-            <select id="bcSelectCan"></select>
-        </div>
-        <div class="filter-group">
-            <label>TRẠNG THÁI</label>
-            <select id="bcSelectTrangThai">
-                <option value="Đã xong">Đã xong</option>
-                <option value="Chưa xong">Chưa xong</option>
-                <option value="1 phần">1 phần</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>GHI CHÚ</label>
-            <input type="text" id="bcInputGhiChu" placeholder="Nhập ghi chú...">
-        </div>
-        <div class="submit-container">
-            <button class="ok-btn" onclick="addBaoCaoRow()">OK</button>
-        </div>
-    </div>
-
-    <div class="summary-box">
-        <div class="summary-left">
-            <div>DANH SÁCH BÁO CÁO CUỐI NGÀY</div>
-        </div>
-        <button class="clear-all-btn" onclick="clearAllData('baocao')">Xóa hết dữ liệu</button>
-    </div>
+    <div class="sub-title" style="margin-top: 20px;">1. Tổng hợp công việc trong ngày</div>
 
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Ngày</th>
-                    <th>Tháp & Tầng</th>
+                    <th>Tháp / Tầng</th>
                     <th>Hạng mục</th>
                     <th>Nhà thầu</th>
-                    <th>Căn</th>
+                    <th>Công tác</th>
+                    <th>Nhân lực</th>
+                    <th>% Hoàn thành</th>
                     <th>Trạng thái</th>
-                    <th>Ghi chú</th>
+                    <th>Ghi chú báo cáo</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
-            <tbody id="bcTableBody"></tbody>
+            <tbody id="reportTableBody"></tbody>
         </table>
     </div>
 
+    <div class="sub-title" style="margin-top: 20px;">2. Công việc phát sinh nếu có</div>
+    <div class="form-phat-sinh-container">
+        <div class="form-group">
+            <label>THÁP</label>
+            <select id="psThap" class="form-control">
+                <option value="Tháp A">Tháp A</option>
+                <option value="Tháp B1">Tháp B1</option>
+                <option value="Tháp B2">Tháp B2</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>TẦNG</label>
+            <select id="psTang" class="form-control">
+                <option value="Tầng 1">Tầng 1</option>
+                <option value="Tầng 8">Tầng 8</option>
+                <option value="Tầng 9">Tầng 9</option>
+                <option value="Tầng 10">Tầng 10</option>
+                <option value="Tầng 11">Tầng 11</option>
+                <option value="Tầng 12">Tầng 12</option>
+                <option value="Tầng 13">Tầng 13</option>
+                <option value="Tầng 14">Tầng 14</option>
+                <option value="Tầng 15">Tầng 15</option>
+                <option value="Tầng 16">Tầng 16</option>
+                <option value="Tầng 17">Tầng 17</option>
+                <option value="Tầng 18">Tầng 18</option>
+                <option value="Tầng 19">Tầng 19</option>
+                <option value="Tầng 20">Tầng 20</option>
+                <option value="Tầng 21">Tầng 21</option>
+                <option value="Tầng 22">Tầng 22</option>
+                <option value="Tầng 23">Tầng 23</option>
+                <option value="Tầng 24">Tầng 24</option>
+                <option value="Tầng 25">Tầng 25</option>
+                <option value="Tầng 26">Tầng 26</option>
+                <option value="Tầng 27">Tầng 27</option>
+                <option value="Tầng 28">Tầng 28</option>
+                <option value="Tầng 29">Tầng 29</option>
+                <option value="Tầng 30">Tầng 30</option>
+                <option value="Tầng 31">Tầng 31</option>
+                <option value="Tầng 32">Tầng 32</option>
+                <option value="Tầng 33">Tầng 33</option>
+                <option value="Tầng 34">Tầng 34</option>
+                <option value="Tầng 35">Tầng 35</option>
+                <option value="Tầng 36">Tầng 36</option>
+                <option value="Tầng 37">Tầng 37</option>
+                <option value="Tầng 38">Tầng 38</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>HẠNG MỤC</label>
+            <select id="psHangMuc" class="form-control">
+                <option value="Lắp đặt lan can">Lắp đặt lan can</option>
+                <option value="Nhôm kính">Nhôm kính</option>
+                <option value="Vách kính phòng tắm">Vách kính phòng tắm</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>NHÀ THẦU</label>
+            <select id="psNhaThau" class="form-control">
+                <option value="BẢN VIỆT">BẢN VIỆT</option>
+                <option value="VIỆT ANH">VIỆT ANH</option>
+                <option value="NHẬT KHOA">NHẬT KHOA</option>
+                <option value="THÁI LONG">THÁI LONG</option>
+                <option value="CAO TRUNG NGHĨA">CAO TRUNG NGHĨA</option>
+                <option value="HƯNG GIA TUỆ">HƯNG GIA TUỆ</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>CÔNG TÁC</label>
+            <input id="psCongTac" class="form-control" type="text" placeholder="Nhập nội dung công tác phát sinh...">
+        </div>
+        <div class="form-group">
+            <label>NHÂN LỰC</label>
+            <input id="psNhanLuc" class="form-control" type="text" placeholder="VD: 5 công nhân">
+        </div>
+        <button class="btn-ok" onclick="addPhatSinhTask()">OK</button>
+    </div>
+    <div class="submit-container">
+        <button class="btn-them-phatsinh" onclick="focusPhatSinhForm()">Thêm Phát Sinh</button>
+    </div>
+
     <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
-        <button class="send-btn" onclick="sendData('baocao')">GỬI BÁO CÁO</button>
+        <button class="send-btn" onclick="sendData('baocao')">GỬI DỮ LIỆU</button>
     </div>
 </div>
 
@@ -427,6 +677,39 @@
 <div id="viewDashboard" class="section-view">
     <div id="dashboardContainer" class="dashboard-container">
         <!-- Dữ liệu chi tiết theo tháp, nhà thầu, hạng mục -->
+    </div>
+</div>
+
+<!-- ================= TAB 4: TIẾN ĐỘ GIAO NHÀ ================= -->
+<div id="viewHandover" class="section-view">
+    <div class="tabs" id="handoverTowerTabs">
+        <button class="tab-btn active" onclick="filterHandoverByTower('Tất cả')">Tất cả</button>
+        <button class="tab-btn" onclick="filterHandoverByTower('Tháp A')">Tháp A</button>
+        <button class="tab-btn" onclick="filterHandoverByTower('Tháp B1')">Tháp B1</button>
+        <button class="tab-btn" onclick="filterHandoverByTower('Tháp B2')">Tháp B2</button>
+    </div>
+    <div class="tabs" id="handoverStatusTabs">
+        <button class="tab-btn active" onclick="filterHandoverByStatus('Tất cả')">Tất cả</button>
+        <button class="tab-btn" onclick="filterHandoverByStatus('Đã bàn giao')">Đã bàn giao</button>
+        <button class="tab-btn" onclick="filterHandoverByStatus('Chưa bàn giao')">Chưa bàn giao</button>
+        <button class="tab-btn" onclick="filterHandoverByStatus('Chậm bàn giao')">Chậm bàn giao</button>
+    </div>
+    <div class="handover-summary">
+        <div class="handover-summary-card"><span>ĐÃ BÀN GIAO</span><strong id="handoverCompletedCount">0</strong></div>
+        <div class="handover-summary-card"><span>CHƯA BÀN GIAO</span><strong id="handoverActiveCount">0</strong></div>
+        <div class="handover-summary-card"><span>CHẬM BÀN GIAO</span><strong id="handoverDelayedCount">0</strong></div>
+    </div>
+    <div class="handover-user-id-row">
+        <label for="handoverUserId">ID người cập nhật</label>
+        <input id="handoverUserId" type="text" placeholder="Nhập ID để sửa tiến độ" autocomplete="off">
+    </div>
+    <div class="table-container handover-table">
+        <table>
+            <thead>
+                <tr><th>Tháp</th><th>Tầng</th><th>Ngày bắt đầu</th><th>Ngày kết thúc</th><th>Trạng thái</th><th>Cập nhật</th><th>Ghi chú</th></tr>
+            </thead>
+            <tbody id="handoverTableBody"></tbody>
+        </table>
     </div>
 </div>
 
@@ -441,6 +724,19 @@
             return `${day}/${month}/${year}`;
         }
         return dateStr;
+    }
+
+    function getTodayString() {
+        const today = new Date();
+        return `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+    }
+
+    function isToday(dateStr) {
+        const parts = String(dateStr || '').trim().split(/[\/-]/);
+        if (parts.length === 3 && parts[0].length <= 2) {
+            return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}` === getTodayString();
+        }
+        return formatDate(dateStr) === getTodayString();
     }
 
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
@@ -505,8 +801,46 @@
         "Tháp B2": 14
     };
 
+    const handoverSchedule = [
+        ['Tháp B1', 13, '10/07/2026', '23/07/2026'], ['Tháp B1', 14, '13/07/2026', '30/07/2026'], ['Tháp B1', 15, '18/07/2026', '06/08/2026'],
+        ['Tháp B1', 16, '23/07/2026', '09/08/2026'], ['Tháp B1', 17, '15/07/2026', '15/08/2026'], ['Tháp B1', 18, '11/07/2026', '17/08/2026'],
+        ['Tháp B1', 19, '12/07/2026', '21/08/2026'], ['Tháp B1', 20, '14/07/2026', '24/08/2026'], ['Tháp B1', 21, '15/07/2026', '28/08/2026'],
+        ['Tháp B1', 22, '18/07/2026', '03/09/2026'], ['Tháp B1', 23, '21/07/2026', '07/09/2026'], ['Tháp B1', 24, '23/07/2026', '11/09/2026'],
+        ['Tháp B1', 25, '25/07/2026', '15/09/2026'], ['Tháp B1', 26, '27/07/2026', '19/09/2026'], ['Tháp B1', 27, '29/07/2026', '23/09/2026'],
+        ['Tháp B1', 28, '31/07/2026', '27/09/2026'], ['Tháp B1', 29, '02/08/2026', '01/10/2026'], ['Tháp B1', 30, '04/08/2026', '05/10/2026'],
+        ['Tháp B1', 31, '06/08/2026', '09/10/2026'], ['Tháp B1', 32, '08/08/2026', '12/10/2026'], ['Tháp B1', 33, '10/08/2026', '17/10/2026'],
+        ['Tháp B1', 34, '12/08/2026', '21/10/2026'], ['Tháp B1', 35, '14/08/2026', '25/10/2026'], ['Tháp B1', 36, '16/08/2026', '04/10/2026'],
+        ['Tháp B1', 37, '18/08/2026', '04/11/2026'], ['Tháp B1', 38, '10/08/2026', '04/11/2026'],
+        ['Tháp B2', 9, '12/07/2026', '06/08/2026'], ['Tháp B2', 10, '14/07/2026', '10/08/2026'], ['Tháp B2', 11, '12/07/2026', '02/08/2026'],
+        ['Tháp B2', 12, '17/07/2026', '13/08/2026'], ['Tháp B2', 13, '19/07/2026', '17/08/2026'], ['Tháp B2', 14, '21/07/2026', '20/08/2026'],
+        ['Tháp B2', 15, '25/07/2026', '23/08/2026'], ['Tháp B2', 16, '27/07/2026', '28/08/2026'], ['Tháp B2', 17, '21/07/2026', '05/09/2026'],
+        ['Tháp B2', 18, '22/07/2026', '09/09/2026'], ['Tháp B2', 19, '23/07/2026', '13/09/2026'], ['Tháp B2', 20, '24/07/2026', '17/09/2026'],
+        ['Tháp B2', 21, '25/07/2026', '21/09/2026'], ['Tháp B2', 22, '26/07/2026', '25/09/2026'], ['Tháp B2', 23, '27/07/2026', '29/09/2026'],
+        ['Tháp B2', 24, '28/07/2026', '03/10/2026'], ['Tháp B2', 25, '31/07/2026', '07/10/2026'], ['Tháp B2', 26, '01/08/2026', '11/10/2026'],
+        ['Tháp B2', 27, '02/08/2026', '15/10/2026'], ['Tháp B2', 28, '03/08/2026', '19/10/2026'], ['Tháp B2', 29, '04/08/2026', '23/10/2026'],
+        ['Tháp B2', 30, '05/08/2026', '27/10/2026'], ['Tháp B2', 31, '06/08/2026', '31/10/2026'], ['Tháp B2', 32, '07/08/2026', '04/11/2026'],
+        ['Tháp B2', 33, '08/08/2026', '11/11/2026'], ['Tháp B2', 34, '09/08/2026', '12/11/2026'], ['Tháp B2', 35, '10/08/2026', '15/11/2026'],
+        ['Tháp B2', 36, '11/08/2026', '19/11/2026'], ['Tháp B2', 37, '12/08/2026', '23/11/2026'], ['Tháp B2', 38, '07/11/2026', '23/11/2026'],
+        ['Tháp A', 8, '24/08/2026', '08/11/2026'], ['Tháp A', 9, '22/08/2026', '04/11/2026'], ['Tháp A', 10, '11/07/2026', '11/08/2026'],
+        ['Tháp A', 11, '20/08/2026', '01/11/2026'], ['Tháp A', 12, '13/07/2026', '22/08/2026'], ['Tháp A', 13, '15/07/2026', '29/08/2026'],
+        ['Tháp A', 14, '18/07/2026', '08/09/2026'], ['Tháp A', 15, '21/07/2026', '15/09/2026'], ['Tháp A', 16, '23/07/2026', '19/09/2026'],
+        ['Tháp A', 17, '26/07/2026', '23/09/2026'], ['Tháp A', 18, '29/07/2026', '27/09/2026'], ['Tháp A', 19, '01/08/2026', '01/10/2026'],
+        ['Tháp A', 20, '03/08/2026', '05/10/2026'], ['Tháp A', 21, '05/08/2026', '09/10/2026'], ['Tháp A', 22, '07/08/2026', '12/10/2026'],
+        ['Tháp A', 23, '09/08/2026', '16/10/2026'], ['Tháp A', 24, '11/08/2026', '19/10/2026'], ['Tháp A', 25, '13/08/2026', '22/10/2026'],
+        ['Tháp A', 26, '15/08/2026', '25/10/2026'], ['Tháp A', 27, '17/08/2026', '29/10/2026'], ['Tháp A', 28, '26/08/2026', '11/11/2026'],
+        ['Tháp A', 29, '28/08/2026', '14/11/2026'], ['Tháp A', 30, '30/08/2026', '17/11/2026'], ['Tháp A', 31, '01/09/2026', '21/11/2026'],
+        ['Tháp A', 32, '30/07/2026', '24/11/2026'], ['Tháp A', 33, '13/08/2026', '27/11/2026'], ['Tháp A', 34, '27/08/2026', '30/11/2026'],
+        ['Tháp A', 35, '08/09/2026', '04/12/2026'], ['Tháp A', 36, '08/09/2026', '08/12/2026'], ['Tháp A', 37, '08/09/2026', '12/12/2026'],
+        ['Tháp A', 38, '10/09/2026', '12/12/2026']
+    ].map(([tower, floor, start, end]) => ({ tower, floor: `Tầng ${floor}`, start, end }));
+
     let currentTowerNL = "Tháp A";
     let currentTowerBC = "Tháp A";
+    let currentReportContractor = "Tất cả";
+    let currentHandoverTower = "Tất cả";
+    let currentHandoverStatus = "Tất cả";
+    let handoverSheetRecords = {};
+    let handoverUserIds = new Set();
 
     function switchMainTab(tabName) {
         document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -518,30 +852,277 @@
         } else if(tabName === 'baocao') {
             document.querySelectorAll('.main-tab-btn')[1].classList.add('active');
             document.getElementById('viewBaoCao').classList.add('active');
-        } else {
+            syncNhanLucToReport();
+        } else if(tabName === 'dashboard') {
             document.querySelectorAll('.main-tab-btn')[2].classList.add('active');
             document.getElementById('viewDashboard').classList.add('active');
             updateDashboardStats();
+        } else {
+            document.querySelectorAll('.main-tab-btn')[3].classList.add('active');
+            document.getElementById('viewHandover').classList.add('active');
+            renderHandoverTable();
         }
+    }
+
+    function parseHandoverDate(dateString) {
+        const [day, month, year] = dateString.split('/').map(Number);
+        return new Date(year, month - 1, day);
+    }
+
+    function getHandoverRecords() {
+        let saved = {};
+        let savedNotes = {};
+        try {
+            saved = JSON.parse(localStorage.getItem('handover_statuses') || '{}');
+            savedNotes = JSON.parse(localStorage.getItem('handover_notes') || '{}');
+        } catch (error) {
+            saved = {};
+            savedNotes = {};
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return handoverSchedule.map(item => {
+            const key = `${item.tower}-${item.floor}`;
+            const sheetRecord = handoverSheetRecords[key];
+            const sheetStatus = sheetRecord?.trangThai;
+            const status = sheetStatus || (saved[key] === 'Đã bàn giao'
+                ? 'Đã bàn giao'
+                : today >= parseHandoverDate(item.end) ? 'Chậm bàn giao' : 'Chưa bàn giao');
+            const ghiChu = sheetRecord?.ghiChu || savedNotes[key] || '';
+            return { ...item, key, id: sheetRecord?.id || '', status, ghiChu };
+        });
+    }
+
+    function updateHandoverStatus(key, status) {
+        const userId = getHandoverUserId();
+        if (!userId) return;
+        let saved = {};
+        try {
+            saved = JSON.parse(localStorage.getItem('handover_statuses') || '{}');
+        } catch (error) {
+            saved = {};
+        }
+        saved[key] = status;
+        localStorage.setItem('handover_statuses', JSON.stringify(saved));
+        const record = handoverSchedule.find(item => `${item.tower}-${item.floor}` === key);
+        if (record) {
+            const currentRecord = getHandoverRecords().find(item => item.key === key);
+            saveHandoverStatusToSheet(record, status, currentRecord?.ghiChu || '', currentRecord?.id || '', userId);
+        }
+        renderHandoverTable();
+    }
+
+    function updateHandoverNote(key, ghiChu) {
+        const userId = getHandoverUserId();
+        if (!userId) return;
+        let savedNotes = {};
+        try {
+            savedNotes = JSON.parse(localStorage.getItem('handover_notes') || '{}');
+        } catch (error) {
+            savedNotes = {};
+        }
+        savedNotes[key] = ghiChu;
+        localStorage.setItem('handover_notes', JSON.stringify(savedNotes));
+        const record = handoverSchedule.find(item => `${item.tower}-${item.floor}` === key);
+        const currentRecord = getHandoverRecords().find(item => item.key === key);
+        if (record) saveHandoverStatusToSheet(record, currentRecord?.status || 'Chưa bàn giao', ghiChu, currentRecord?.id || '', userId);
+    }
+
+    function getHandoverUserId() {
+        const input = document.getElementById('handoverUserId');
+        const userId = input?.value.trim() || '';
+        if (!userId) {
+            alert('Vui lòng nhập ID được cấp trong sheet user trước khi cập nhật.');
+            input?.focus();
+            return '';
+        }
+        if (handoverUserIds.size && !handoverUserIds.has(userId)) {
+            alert('ID không hợp lệ. Vui lòng kiểm tra lại sheet user.');
+            input?.focus();
+            return '';
+        }
+        return userId;
+    }
+
+    function saveHandoverStatusToSheet(record, status, ghiChu, id, userId) {
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'handover',
+                userId,
+                rows: [{
+                    thap: record.tower,
+                    tang: record.floor,
+                    ngayBatDau: record.start,
+                    ngayDuKien: record.end,
+                    trangThai: status,
+                    ghiChu,
+                    ngayCapNhat: getTodayString(),
+                    id
+                }]
+            })
+        }).catch(error => console.error('Lỗi đồng bộ tiến độ giao nhà:', error));
+    }
+
+    function filterHandoverByTower(tower) {
+        currentHandoverTower = tower;
+        document.querySelectorAll('#handoverTowerTabs .tab-btn').forEach(button => {
+            button.classList.toggle('active', button.innerText.trim() === tower);
+        });
+        renderHandoverTable();
+    }
+
+    function filterHandoverByStatus(status) {
+        currentHandoverStatus = status;
+        document.querySelectorAll('#handoverStatusTabs .tab-btn').forEach(button => {
+            button.classList.toggle('active', button.innerText.trim() === status);
+        });
+        renderHandoverTable();
+    }
+
+    function renderHandoverTable() {
+        const body = document.getElementById('handoverTableBody');
+        if (!body) return;
+
+        const records = getHandoverRecords();
+        const counts = records.reduce((result, item) => {
+            result[item.status] += 1;
+            return result;
+        }, { 'Đã bàn giao': 0, 'Chưa bàn giao': 0, 'Chậm bàn giao': 0 });
+        document.getElementById('handoverCompletedCount').innerText = counts['Đã bàn giao'];
+        document.getElementById('handoverActiveCount').innerText = counts['Chưa bàn giao'];
+        document.getElementById('handoverDelayedCount').innerText = counts['Chậm bàn giao'];
+
+        const filtered = records.filter(item =>
+            (currentHandoverTower === 'Tất cả' || item.tower === currentHandoverTower) &&
+            (currentHandoverStatus === 'Tất cả' || item.status === currentHandoverStatus)
+        );
+        body.innerHTML = filtered.map(item => {
+            const statusClass = item.status === 'Đã bàn giao' ? 'completed' : item.status === 'Chậm bàn giao' ? 'delayed' : 'active';
+            return `<tr>
+                <td>${item.tower}</td><td>${item.floor}</td><td>${item.start}</td><td>${item.end}</td>
+                <td><span class="handover-status ${statusClass}">${item.status}</span></td>
+                <td><select aria-label="Cập nhật ${item.tower} ${item.floor}" onchange="updateHandoverStatus('${item.key}', this.value)">
+                    ${item.status === 'Chậm bàn giao' ? '<option value="auto" selected disabled>Chậm bàn giao (tự động)</option>' : ''}
+                    <option value="Chưa bàn giao" ${item.status === 'Chưa bàn giao' ? 'selected' : ''}>Chưa bàn giao</option><option value="Đã bàn giao" ${item.status === 'Đã bàn giao' ? 'selected' : ''}>Đã bàn giao</option>
+                </select></td>
+                <td><input type="text" value="${item.ghiChu.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}" placeholder="Lý do chậm trễ..." aria-label="Ghi chú ${item.tower} ${item.floor}" onchange="updateHandoverNote('${item.key}', this.value)"></td>
+            </tr>`;
+        }).join('');
     }
 
     function initForm() {
         const nlTang = document.getElementById('nlSelectTang');
-        const bcTang = document.getElementById('bcSelectTang');
         nlTang.innerHTML = "";
-        bcTang.innerHTML = "";
         
         // Thêm Tầng 1 theo yêu cầu
         nlTang.innerHTML += `<option value="Tầng 1">Tầng 1</option>`;
-        bcTang.innerHTML += `<option value="Tầng 1">Tầng 1</option>`;
 
         for (let i = 8; i <= 38; i++) {
             nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
-            bcTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
         }
         updateDropdowns('nhanluc');
-        updateDropdowns('baocao');
+        renderHandoverTable();
         loadDataFromGoogleSheets();
+    }
+
+    function syncNhanLucToReport() {
+        const reportBody = document.getElementById('reportTableBody');
+        if (!reportBody) return;
+
+        document.querySelectorAll('#nlTableBody tr').forEach(sourceRow => {
+            const sourceCells = sourceRow.querySelectorAll('td');
+            if (sourceCells.length < 7) return;
+
+            const sourceKey = Array.from(sourceCells).slice(1, 7).map(cell => cell.innerText).join('|');
+            if (reportBody.querySelector(`tr[data-source-key="${CSS.escape(sourceKey)}"]`)) return;
+
+            const reportRow = document.createElement('tr');
+            reportRow.dataset.sourceKey = sourceKey;
+            reportRow.innerHTML = `
+                <td>${sourceCells[1].innerText}</td>
+                <td>${sourceCells[2].innerText}</td>
+                <td>${sourceCells[3].innerText}</td>
+                <td>${sourceCells[4].innerText}</td>
+                <td>${sourceCells[5].innerText}</td>
+                <td><input type="text" placeholder="VD: 100%" class="report-progress"></td>
+                <td><label class="status-toggle"><input type="checkbox" class="report-status" onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">Chưa xong</span></label></td>
+                <td><input type="text" placeholder="Ghi chú báo cáo..." class="report-note"></td>
+                <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+            `;
+            reportBody.appendChild(reportRow);
+        });
+    }
+
+    function filterReportByContractor(contractorName) {
+        currentReportContractor = contractorName;
+        document.querySelectorAll('#reportContractorTabs .tab-btn').forEach(button => {
+            button.classList.toggle('active', button.innerText.trim() === contractorName);
+        });
+        document.querySelectorAll('#reportTableBody tr').forEach(row => {
+            const contractor = row.cells[2] ? row.cells[2].innerText.trim() : '';
+            row.style.display = contractorName === 'Tất cả' || contractor === contractorName ? '' : 'none';
+        });
+    }
+
+    function updateStatusLabel(toggle) {
+        toggle.closest('.status-toggle').querySelector('.status-label').innerText = toggle.checked ? 'Đã xong' : 'Chưa xong';
+    }
+
+    function getReportRowValues(row) {
+        const cells = row.querySelectorAll('td');
+        return {
+            ngay: getTodayString(),
+            thapTang: cells[0]?.innerText.trim() || '',
+            hangMuc: cells[1]?.innerText.trim() || '',
+            nhaThau: cells[2]?.innerText.trim() || '',
+            congTac: cells[3]?.innerText.trim() || '',
+            nhanLuc: cells[4]?.innerText.trim() || '',
+            tienDo: cells[5]?.querySelector('input')?.value.trim() || '',
+            trangThai: cells[6]?.querySelector('.report-status')?.checked ? 'Đã xong' : 'Chưa xong',
+            ghiChu: cells[7]?.querySelector('input')?.value.trim() || ''
+        };
+    }
+
+    function addPhatSinhTask() {
+        const thap = document.getElementById('psThap').value;
+        const tang = document.getElementById('psTang').value;
+        const nhaThau = document.getElementById('psNhaThau').value;
+        const noiDung = document.getElementById('psCongTac').value.trim();
+        const nhanLuc = document.getElementById('psNhanLuc').value.trim();
+        if (!noiDung) {
+            alert('Vui lòng nhập nội dung công tác phát sinh!');
+            return;
+        }
+
+        const row = document.createElement('tr');
+        row.dataset.extraTask = 'true';
+        row.innerHTML = `
+            <td>${tang} - ${thap}</td>
+            <td>${document.getElementById('psHangMuc').value}</td>
+            <td>${nhaThau}</td>
+            <td>${noiDung}</td>
+            <td>${nhanLuc}</td>
+            <td><input type="text" placeholder="VD: 100%" class="report-progress"></td>
+            <td><label class="status-toggle"><input type="checkbox" class="report-status" onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">Chưa xong</span></label></td>
+            <td><input type="text" placeholder="Ghi chú báo cáo..." class="report-note"></td>
+            <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+        `;
+        const reportBody = document.getElementById('reportTableBody');
+        const matchingRow = Array.from(reportBody.rows).find(reportRow => reportRow.cells[2]?.innerText.trim() === nhaThau);
+        if (matchingRow) reportBody.insertBefore(row, matchingRow);
+        else reportBody.appendChild(row);
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (currentReportContractor !== 'Tất cả') filterReportByContractor(currentReportContractor);
+        document.getElementById('psCongTac').value = '';
+        document.getElementById('psNhanLuc').value = '';
+    }
+
+    function focusPhatSinhForm() {
+        document.getElementById('psCongTac').focus();
     }
 
     function loadDataFromGoogleSheets() {
@@ -549,7 +1130,14 @@
         .then(response => response.json())
         .then(data => {
             const nlBody = document.getElementById('nlTableBody');
-            const bcBody = document.getElementById('bcTableBody');
+            const bcBody = document.getElementById('reportTableBody');
+
+            handoverSheetRecords = {};
+            handoverUserIds = new Set((data.userIds || []).map(id => String(id).trim()).filter(Boolean));
+            (data.tienDoGiaoNha || []).forEach(row => {
+                handoverSheetRecords[`${row.thap}-${row.tang}`] = row;
+            });
+            renderHandoverTable();
             
             nlBody.innerHTML = "";
             bcBody.innerHTML = "";
@@ -563,7 +1151,7 @@
             if(data.nhanLuc) {
                 data.nhanLuc.forEach(row => {
                     let formattedDate = formatDate(row.ngay);
-                    if (formattedDate === todayStr) {
+                    if (isToday(row.ngay)) {
                         let tr = document.createElement('tr');
                         tr.setAttribute('data-saved', 'true');
                         tr.innerHTML = `
@@ -582,26 +1170,32 @@
                 updateTotal();
             }
 
-            if(data.baoCao) {
+            if (data.baoCao) {
                 data.baoCao.forEach(row => {
-                    let formattedDate = formatDate(row.ngay);
-                    if (formattedDate === todayStr) {
-                        let tr = document.createElement('tr');
-                        tr.setAttribute('data-saved', 'true');
-                        tr.innerHTML = `
-                            <td>${formattedDate}</td>
-                            <td>${row.thapTang}</td>
-                            <td>${row.hangMuc}</td>
-                            <td>${row.nhaThau}</td>
-                            <td>${row.can}</td>
-                            <td><b>${row.trangThai}</b></td>
-                            <td>${row.ghiChu}</td>
-                            <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
-                        `;
-                        bcBody.prepend(tr);
-                    }
+                    const formattedDate = formatDate(row.ngay);
+                    if (!isToday(row.ngay)) return;
+
+                    const reportRow = document.createElement('tr');
+                    const sourceKey = [row.thapTang, row.hangMuc, row.nhaThau, row.congTac, row.nhanLuc, row.ghiChu].join('|');
+                    reportRow.dataset.sourceKey = sourceKey;
+                    reportRow.dataset.saved = 'true';
+                    reportRow.innerHTML = `
+                        <td>${row.thapTang || ''}</td>
+                        <td>${row.hangMuc || ''}</td>
+                        <td>${row.nhaThau || ''}</td>
+                        <td>${row.congTac || ''}</td>
+                        <td>${row.nhanLuc || ''}</td>
+                        <td><input type="text" value="${row.tienDo || ''}" placeholder="VD: 100%" class="report-progress"></td>
+                        <td><label class="status-toggle"><input type="checkbox" class="report-status" ${row.trangThai === 'Đã xong' ? 'checked' : ''} onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">${row.trangThai === 'Đã xong' ? 'Đã xong' : 'Chưa xong'}</span></label></td>
+                        <td><input type="text" value="${row.ghiChu || ''}" placeholder="Ghi chú báo cáo..." class="report-note"></td>
+                        <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
+                    `;
+                    reportRow.dataset.original = JSON.stringify(getReportRowValues(reportRow));
+                    bcBody.appendChild(reportRow);
                 });
             }
+
+            syncNhanLucToReport();
             updateDashboardStats();
         })
         .catch(err => console.log("Lỗi tải dữ liệu chung:", err));
@@ -623,7 +1217,7 @@
                 btn.classList.remove('active');
                 if(btn.innerText === towerName) btn.classList.add('active');
             });
-            updateDropdowns('baocao');
+            syncNhanLucToReport();
         }
     }
 
@@ -636,22 +1230,6 @@
                 hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
             });
             updateSubDropdowns('nhanluc');
-        } else {
-            const list = database[currentTowerBC];
-            const hmSelect = document.getElementById('bcSelectHangMuc');
-            hmSelect.innerHTML = "";
-            list.forEach(item => {
-                hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
-            });
-            
-            const canSelect = document.getElementById('bcSelectCan');
-            canSelect.innerHTML = "";
-            const totalCans = towerConfigs[currentTowerBC] || 14;
-            for(let c = 1; c <= totalCans; c++) {
-                canSelect.innerHTML += `<option value="Căn ${c}">Căn ${c}</option>`;
-            }
-
-            updateSubDropdowns('baocao');
         }
     }
 
@@ -666,12 +1244,6 @@
                 found.congTac.forEach(ct => {
                     ctSelect.innerHTML += `<option value="${ct}">${ct}</option>`;
                 });
-            }
-        } else {
-            const selectedHM = document.getElementById('bcSelectHangMuc').value;
-            const found = database[currentTowerBC].find(item => item.hangMuc === selectedHM);
-            if (found) {
-                document.getElementById('bcSelectNhaThau').innerHTML = `<option value="${found.nhaThau}">${found.nhaThau}</option>`;
             }
         }
     }
@@ -691,7 +1263,7 @@
 
         const nhanluc = parseInt(nhanlucVal);
         const tbody = document.getElementById('nlTableBody');
-        const currentDate = new Date().toLocaleDateString('vi-VN');
+        const currentDate = getTodayString();
         
         let tr = document.createElement('tr');
         tr.innerHTML = `
@@ -711,33 +1283,6 @@
         updateDashboardStats();
     }
 
-    function addBaoCaoRow() {
-        const tang = document.getElementById('bcSelectTang').value;
-        const hangmuc = document.getElementById('bcSelectHangMuc').value;
-        const nhathau = document.getElementById('bcSelectNhaThau').value;
-        const can = document.getElementById('bcSelectCan').value;
-        const trangthai = document.getElementById('bcSelectTrangThai').value;
-        const ghichu = document.getElementById('bcInputGhiChu').value || "";
-
-        const tbody = document.getElementById('bcTableBody');
-        const currentDate = new Date().toLocaleDateString('vi-VN');
-        
-        let tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${currentDate}</td>
-            <td>${currentTowerBC} - ${tang}</td>
-            <td>${hangmuc}</td>
-            <td>${nhathau}</td>
-            <td>${can}</td>
-            <td><b>${trangthai}</b></td>
-            <td>${ghichu}</td>
-            <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
-        `;
-        tbody.prepend(tr);
-        document.getElementById('bcInputGhiChu').value = '';
-        updateDashboardStats();
-    }
-
     function deleteRow(btn, mode) {
         btn.closest('tr').remove();
         if(mode === 'nhanluc') updateTotal();
@@ -745,7 +1290,7 @@
     }
 
    function clearAllData(mode) {
-    const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
+    const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
     document.getElementById(tbodyId).innerHTML = "";
     if(mode === 'nhanluc') updateTotal();
     updateDashboardStats();
@@ -831,8 +1376,11 @@
     }
 
     function sendData(mode) {
-        const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'bcTableBody';
-        const rows = document.querySelectorAll(`#${tbodyId} tr:not([data-saved="true"])`);
+        const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
+        const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
+        const rows = mode === 'baocao'
+            ? Array.from(candidateRows).filter(row => !row.dataset.saved || row.dataset.original !== JSON.stringify(getReportRowValues(row)))
+            : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
         
         if (rows.length === 0) {
             alert('Không có dữ liệu mới nào để gửi!');
@@ -856,16 +1404,7 @@
             });
         } else {
             rows.forEach(row => {
-                const cols = row.querySelectorAll('td');
-                payloadData.push({
-                    ngay: cols[0].innerText,
-                    thapTang: cols[1].innerText,
-                    hangMuc: cols[2].innerText,
-                    nhaThau: cols[3].innerText,
-                    can: cols[4].innerText,
-                    trangThai: cols[5].innerText,
-                    ghiChu: cols[6].innerText
-                });
+                payloadData.push(getReportRowValues(row));
             });
         }
 
