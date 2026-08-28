@@ -1388,9 +1388,7 @@
 
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
         const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
-        const rows = mode === 'baocao'
-            ? Array.from(candidateRows)
-            : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
+        const rows = Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
         
         if (rows.length === 0) {
             alert('Không có dữ liệu mới nào để gửi!');
