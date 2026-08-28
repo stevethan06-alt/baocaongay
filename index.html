@@ -5,7 +5,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.28-v11";  
+        const APP_VERSION = "2026.08.28-v14";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -344,6 +344,22 @@
             color: white;
             padding: 6px;
             border-radius: 4px;
+        }
+        #reportTableBody td:nth-child(5),
+        #reportTableBody td:nth-child(6) {
+            width: 8%;
+        }
+        #reportTableBody .report-apartment,
+        #reportTableBody .report-progress {
+            width: 50%;
+            min-width: 90px;
+        }
+        #reportTableBody td:nth-child(8) {
+            width: 18%;
+        }
+        #reportTableBody .report-note {
+            width: 100%;
+            min-width: 260px;
         }
         .status-toggle {
             display: inline-flex;
@@ -1039,8 +1055,12 @@
             const sourceCells = sourceRow.querySelectorAll('td');
             if (sourceCells.length < 7) return;
 
-            const sourceKey = Array.from(sourceCells).slice(1, 5).map(cell => cell.innerText).join('|');
-            if (reportBody.querySelector(`tr[data-source-key="${CSS.escape(sourceKey)}"]`)) return;
+            const sourceKey = makeReportKey(Array.from(sourceCells).slice(1, 5).map(cell => cell.innerText));
+            const matchingRows = Array.from(reportBody.rows).filter(row => row.dataset.sourceKey === sourceKey);
+            if (matchingRows.length) {
+                matchingRows.slice(1).forEach(row => row.remove());
+                return;
+            }
 
             const reportRow = document.createElement('tr');
             reportRow.dataset.sourceKey = sourceKey;
@@ -1101,6 +1121,10 @@
             trangThai: cells[6]?.querySelector('.report-status')?.checked ? 'Đã xong' : 'Chưa xong',
             ghiChu: cells[7]?.querySelector('input')?.value.trim() || ''
         };
+    }
+
+    function makeReportKey(parts) {
+        return parts.map(value => String(value || '').trim().toLowerCase()).join('\u001f');
     }
 
     function addPhatSinhTask() {
@@ -1189,12 +1213,18 @@
             }
 
             if (data.baoCao) {
+                const latestReportRows = new Map();
                 data.baoCao.forEach(row => {
                     const formattedDate = formatDate(row.ngay);
                     if (!isToday(row.ngay)) return;
+                    latestReportRows.set(makeReportKey([row.thapTang, row.hangMuc, row.nhaThau, row.congTac]), row);
+                });
+
+                latestReportRows.forEach(row => {
+                    const formattedDate = formatDate(row.ngay);
 
                     const reportRow = document.createElement('tr');
-                    const sourceKey = [row.thapTang, row.hangMuc, row.nhaThau, row.congTac].join('|');
+                    const sourceKey = makeReportKey([row.thapTang, row.hangMuc, row.nhaThau, row.congTac]);
                     reportRow.dataset.sourceKey = sourceKey;
                     reportRow.dataset.saved = 'true';
                     reportRow.dataset.userModified = 'false';
@@ -1203,7 +1233,7 @@
                         <td>${row.hangMuc || ''}</td>
                         <td>${row.nhaThau || ''}</td>
                         <td>${row.congTac || ''}</td>
-                        <td><input type="text" value="${row.can || row.nhanLuc || ''}" placeholder="Nhập căn..." class="report-apartment"></td>
+                        <td><input type="text" value="${row.can || ''}" placeholder="Nhập căn..." class="report-apartment"></td>
                         <td><input type="text" value="${row.tienDo || ''}" placeholder="VD: 100%" class="report-progress"></td>
                         <td><label class="status-toggle"><input type="checkbox" class="report-status" ${row.trangThai === 'Đã xong' ? 'checked' : ''} onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">${row.trangThai === 'Đã xong' ? 'Đã xong' : 'Chưa xong'}</span></label></td>
                         <td><input type="text" value="${row.ghiChu || ''}" placeholder="Ghi chú báo cáo..." class="report-note"></td>
