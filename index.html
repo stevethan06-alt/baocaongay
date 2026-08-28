@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1027,6 +1026,7 @@
             nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
         }
         updateDropdowns('nhanluc');
+        trackReportEdits();
         renderHandoverTable();
         loadDataFromGoogleSheets();
     }
@@ -1044,6 +1044,7 @@
 
             const reportRow = document.createElement('tr');
             reportRow.dataset.sourceKey = sourceKey;
+            reportRow.dataset.userModified = 'false';
             reportRow.innerHTML = `
                 <td>${sourceCells[1].innerText}</td>
                 <td>${sourceCells[2].innerText}</td>
@@ -1074,6 +1075,18 @@
         toggle.closest('.status-toggle').querySelector('.status-label').innerText = toggle.checked ? 'Đã xong' : 'Chưa xong';
     }
 
+    function trackReportEdits() {
+        const reportBody = document.getElementById('reportTableBody');
+        if (!reportBody || reportBody.dataset.editTracking === 'true') return;
+        const markModified = event => {
+            const row = event.target.closest('tr');
+            if (row) row.dataset.userModified = 'true';
+        };
+        reportBody.addEventListener('input', markModified);
+        reportBody.addEventListener('change', markModified);
+        reportBody.dataset.editTracking = 'true';
+    }
+
     function getReportRowValues(row) {
         const cells = row.querySelectorAll('td');
         return {
@@ -1102,6 +1115,7 @@
 
         const row = document.createElement('tr');
         row.dataset.extraTask = 'true';
+        row.dataset.userModified = 'true';
         row.innerHTML = `
             <td>${tang} - ${thap}</td>
             <td>${document.getElementById('psHangMuc').value}</td>
@@ -1181,6 +1195,7 @@
                     const sourceKey = [row.thapTang, row.hangMuc, row.nhaThau, row.congTac].join('|');
                     reportRow.dataset.sourceKey = sourceKey;
                     reportRow.dataset.saved = 'true';
+                    reportRow.dataset.userModified = 'false';
                     reportRow.innerHTML = `
                         <td>${row.thapTang || ''}</td>
                         <td>${row.hangMuc || ''}</td>
@@ -1389,7 +1404,9 @@
 
         const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
         const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
-        const rows = Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
+        const rows = mode === 'baocao'
+            ? Array.from(candidateRows).filter(row => row.dataset.userModified === 'true')
+            : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
         
         if (rows.length === 0) {
             alert('Không có dữ liệu mới nào để gửi!');
