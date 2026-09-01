@@ -5,7 +5,7 @@
     <title>Quản lý Nhân lực & Thi công Công trình</title>
     <script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.08.28-v14";  
+        const APP_VERSION = "2026.09.01-v15";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -14,34 +14,87 @@
     <style>
         :root {
             --bg-color: #0b131a;
+            --bg-soft: #101d29;
             --card-bg: #111d28;
+            --card-soft: #0d1720;
             --border-color: #1f2f3d;
             --accent-color: #00d2ff;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
+            --accent-strong: #0ea5e9;
+            --text-main: #edf6ff;
+            --text-muted: #b7c9d9;
+            --text-strong: #ffffff;
             --hover-color: #162838;
+            --field-bg: #0b131a;
+            --field-text: #edf6ff;
+            --success-bg: #10b981;
+            --danger-bg: #ef4444;
+            --shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.18);
+        }
+        body.light-theme {
+            --bg-color: #edf4fb;
+            --bg-soft: #f7fbff;
+            --card-bg: #ffffff;
+            --card-soft: #f4f8ff;
+            --border-color: #d4e0ee;
+            --accent-color: #0f7ae5;
+            --accent-strong: #0b5ed7;
+            --text-main: #101828;
+            --text-muted: #475467;
+            --text-strong: #0f172a;
+            --hover-color: rgba(15, 122, 229, 0.08);
+            --field-bg: #ffffff;
+            --field-text: #101828;
+            --success-bg: #10b981;
+            --danger-bg: #ef4444;
+            --shadow-soft: 0 8px 18px rgba(15, 23, 42, 0.08);
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg-color) 100%);
             color: var(--text-main);
             margin: 0;
             padding: 20px;
+            transition: background 0.25s ease, color 0.25s ease;
         }
         .header {
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
         }
         .header h1 {
             font-size: 24px;
-            color: white;
+            color: var(--text-strong);
             margin: 0 0 5px 0;
         }
         .header p {
             color: var(--text-muted);
             margin: 0;
             font-size: 14px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .theme-toggle {
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 9px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        body.light-theme .theme-toggle {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-color: var(--border-color);
         }
         
         .main-tabs {
@@ -51,20 +104,21 @@
             flex-wrap: wrap;
         }
         .main-tab-btn {
-            background-color: #0e1721;
-            border: 2px solid var(--border-color);
-            color: var(--text-muted);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
             padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
             transition: all 0.3s;
+            box-shadow: var(--shadow-soft);
         }
         .main-tab-btn.active {
-            background-color: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
         }
 
         .tabs {
@@ -76,7 +130,7 @@
         .tab-btn {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            color: var(--text-muted);
+            color: var(--text-main);
             padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
@@ -84,9 +138,9 @@
             transition: all 0.3s;
         }
         .tab-btn.active, .tab-btn:hover {
-            background-color: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
         }
 
         .filter-panel {
@@ -98,6 +152,7 @@
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
         }
         .filter-group label {
             display: block;
@@ -108,12 +163,17 @@
         }
         .filter-group select, .filter-group input {
             width: 100%;
-            background: #0b131a;
+            background: var(--field-bg);
             border: 1px solid var(--border-color);
-            color: white;
+            color: var(--field-text);
             padding: 10px;
             border-radius: 6px;
             box-sizing: border-box;
+            color-scheme: dark;
+        }
+        body.light-theme .filter-group select,
+        body.light-theme .filter-group input {
+            color-scheme: light;
         }
         .submit-container {
             grid-column: 1 / -1;
@@ -183,6 +243,7 @@
             align-items: center;
             font-size: 16px;
             font-weight: bold;
+            color: var(--text-main);
         }
         .summary-left {
             display: flex;
@@ -241,6 +302,7 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow-x: auto;
+            box-shadow: var(--shadow-soft);
         }
         table {
             width: 100%;
@@ -253,11 +315,14 @@
             border-bottom: 1px solid var(--border-color);
         }
         th {
-            background-color: #0e1721;
-            color: var(--text-muted);
+            background-color: var(--card-soft);
+            color: var(--text-main);
             font-weight: 600;
             text-transform: uppercase;
             font-size: 12px;
+        }
+        td {
+            color: var(--text-main);
         }
         tr:hover {
             background-color: var(--hover-color);
@@ -492,8 +557,13 @@
 <body>
 
 <div class="header">
-    <h1>HỆ THỐNG QUẢN LÝ NHÂN LỰC & THI CÔNG</h1>
-    <p>Chọn tháp, tầng, hạng mục, nhà thầu và cập nhật dữ liệu hàng ngày</p>
+    <div>
+        <h1>HỆ THỐNG QUẢN LÝ NHÂN LỰC & THI CÔNG</h1>
+        <p>Chọn tháp, tầng, hạng mục, nhà thầu và cập nhật dữ liệu hàng ngày</p>
+    </div>
+    <div class="header-actions">
+        <button id="themeToggle" class="theme-toggle" type="button">🌙 Chế độ tối</button>
+    </div>
 </div>
 
 <div class="main-tabs">
@@ -1031,6 +1101,22 @@
         }).join('');
     }
 
+    function setupThemeToggle() {
+        const toggleBtn = document.getElementById('themeToggle');
+        if (!toggleBtn) return;
+
+        const savedTheme = localStorage.getItem('themeMode') || 'dark';
+        const shouldLight = savedTheme === 'light';
+        document.body.classList.toggle('light-theme', shouldLight);
+        toggleBtn.textContent = shouldLight ? '🌙 Chế độ tối' : '☀️ Chế độ sáng';
+
+        toggleBtn.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('themeMode', isLight ? 'light' : 'dark');
+            toggleBtn.textContent = isLight ? '🌙 Chế độ tối' : '☀️ Chế độ sáng';
+        });
+    }
+
     function initForm() {
         const nlTang = document.getElementById('nlSelectTang');
         nlTang.innerHTML = "";
@@ -1041,6 +1127,7 @@
         for (let i = 8; i <= 38; i++) {
             nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
         }
+        setupThemeToggle();
         updateDropdowns('nhanluc');
         trackReportEdits();
         renderHandoverTable();
