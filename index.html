@@ -974,7 +974,7 @@
             const sheetRecord = handoverSheetRecords[key];
             const sheetStatus = sheetRecord?.trangThai;
             const status = sheetStatus || (saved[key] === 'Đã bàn giao'
-                ? 'Đã bàn giao
+                ? 'Đã bàn giao'
                 : today >= parseHandoverDate(item.end) ? 'Chậm bàn giao' : 'Chưa bàn giao');
             const ghiChu = sheetRecord?.ghiChu || savedNotes[key] || '';
             return { ...item, key, id: sheetRecord?.id || '', status, ghiChu };
@@ -1284,7 +1284,7 @@
                         let tr = document.createElement('tr');
                         tr.setAttribute('data-saved', 'true');
                         tr.innerHTML = `
-                            <td>${getTodayString()}</td>
+                            <td>${formattedDate}</td>
                             <td>${row.tang}</td>
                             <td>${row.hangMuc}</td>
                             <td>${row.nhaThau}</td>
