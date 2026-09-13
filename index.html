@@ -579,6 +579,7 @@
         <button class="tab-btn active" onclick="selectTower('Tháp A', 'nhanluc')">Tháp A</button>
         <button class="tab-btn" onclick="selectTower('Tháp B1', 'nhanluc')">Tháp B1</button>
         <button class="tab-btn" onclick="selectTower('Tháp B2', 'nhanluc')">Tháp B2</button>
+         <button class="tab-btn" onclick="selectTower('Khối Đế', 'nhanluc')">Khối Đế</button>
     </div>
 
     <div class="filter-panel">
@@ -828,6 +829,19 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
 
     const database = {
+        "Khối Đế": [
+        {
+            hangMuc: "Lắp đặt lan can", 
+            nhaThau: "BẢN VIỆT", 
+            congTac: ["VẬN CHUYỂN VẬT TƯ", "Khoan cấy ty lan can", "Lắp trụ lan can", "Fill lỗ lan can", "Lắp kính lan can", "Lắp tay trụ lan can", "Vệ sinh "]
+        },
+        {
+            hangMuc: "Nhôm kính", 
+            nhaThau: "VIỆT ANH", 
+            congTac: ["Vận chuyển vật tư", "Lắp đặt khung nhôm", "Bơm vữa", "Lắp đặt kính", "Lắp đặt phụ kiện", "Bắn Silicone", "Vệ sinh"]
+        }
+       ],
+    
         "Tháp A": [
             {
                 hangMuc: "Lắp đặt lan can", 
@@ -882,6 +896,7 @@
     };
 
     const towerConfigs = {
+        "Khối Đế": 8, // Cấu hình danh sách tầng từ 1 đến 8
         "Tháp A": 14,
         "Tháp B1": 7,
         "Tháp B2": 14
@@ -978,9 +993,25 @@
                 : today >= parseHandoverDate(item.end) ? 'Chậm bàn giao' : 'Chưa bàn giao');
             const ghiChu = sheetRecord?.ghiChu || savedNotes[key] || '';
             return { ...item, key, id: sheetRecord?.id || '', status, ghiChu };
-        });
+        })
     }
+     
+    function updateTangDropdown(towerName) {
+    const tangSelect = document.getElementById('nlSelectTang'); // Kiểm tra đúng ID ô Chọn Tầng của bạn
+    if (!tangSelect) return;
 
+    tangSelect.innerHTML = '';
+
+    // Khối Đế: 8 tầng | Tất cả các tháp khác: 38 tầng
+    const maxTang = (towerName === "Khối Đế") ? 8 : 38; 
+
+    for (let i = 1; i <= maxTang; i++) {
+        const option = document.createElement('option');
+        option.value = `Tầng ${i}`;
+        option.textContent = `Tầng ${i}`;
+        tangSelect.appendChild(option);
+    }
+}
     function updateHandoverStatus(key, status) {
         const userId = getHandoverUserId();
         if (!userId) return;
@@ -1338,36 +1369,52 @@
     }
 
     function selectTower(towerName, mode) {
-        if(mode === 'nhanluc') {
-            currentTowerNL = towerName;
-            const container = document.getElementById('viewNhanLuc');
-            container.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText === towerName) btn.classList.add('active');
-            });
-            updateDropdowns('nhanluc');
-        } else {
-            currentTowerBC = towerName;
-            const container = document.getElementById('viewBaoCao');
-            container.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText === towerName) btn.classList.add('active');
-            });
-            syncNhanLucToReport();
-        }
+    if(mode === 'nhanluc') {
+        currentTowerNL = towerName;
+        const container = document.getElementById('viewNhanLuc');
+        container.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.trim() === towerName) btn.classList.add('active');
+        });
+        updateDropdowns('nhanluc');
+    } else {
+        currentTowerBC = towerName;
+        const container = document.getElementById('viewBaoCao');
+        container.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.trim() === towerName) btn.classList.add('active');
+        });
+        syncNhanLucToReport();
     }
+}
 
-    function updateDropdowns(mode) {
-        if(mode === 'nhanluc') {
-            const list = database[currentTowerNL];
-            const hmSelect = document.getElementById('nlSelectHangMuc');
-            hmSelect.innerHTML = "";
-            list.forEach(item => {
-                hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
-            });
-            updateSubDropdowns('nhanluc');
+function updateDropdowns(mode) {
+    if(mode === 'nhanluc') {
+        // --- BỔ SUNG: Cập nhật danh sách Tầng dựa theo currentTowerNL ---
+        const tangSelect = document.getElementById('nlSelectTang');
+        if (tangSelect) {
+            tangSelect.innerHTML = '';
+            const minTang = (currentTowerNL === "Khối Đế") ? 1 : 8;
+            const maxTang = (currentTowerNL === "Khối Đế") ? 8 : 38;
+
+            for (let i = minTang; i <= maxTang; i++) {
+                const opt = document.createElement('option');
+                opt.value = `Tầng ${i}`;
+                opt.textContent = `Tầng ${i}`;
+                tangSelect.appendChild(opt);
+            }
         }
+
+        // --- Giữ nguyên logic Hạng mục ---
+        const list = database[currentTowerNL] || [];
+        const hmSelect = document.getElementById('nlSelectHangMuc');
+        hmSelect.innerHTML = "";
+        list.forEach(item => {
+            hmSelect.innerHTML += `<option value="${item.hangMuc}">${item.hangMuc}</option>`;
+        });
+        updateSubDropdowns('nhanluc');
     }
+}
 
     function updateSubDropdowns(mode) {
         if(mode === 'nhanluc') {
