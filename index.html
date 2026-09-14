@@ -1286,14 +1286,15 @@
     }
 
     function loadDataFromGoogleSheets() {
-        fetch(SCRIPT_URL)
+        fetch(SCRIPT_URL + '?todayOnly=true')
         .then(response => response.json())
         .then(data => {
             const nlBody = document.getElementById('nlTableBody');
             const bcBody = document.getElementById('reportTableBody');
 
             handoverSheetRecords = {};
-            handoverUserIds = new Set((data.userIds || []).map(id => String(id).trim()).filter(Boolean));
+            const formattedUserIds = (data.userIds || []).map(id => String(id).trim()).filter(Boolean);
+            handoverUserIds = new Set(formattedUserIds);
             (data.tienDoGiaoNha || []).forEach(row => {
                 handoverSheetRecords[`${row.thap}-${row.tang}`] = row;
             });
