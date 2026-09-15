@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý Nhân lực & Thi công Công trình</title>
-    <script>
+    <!-- v16: bootstrap nhẹ, tải theo tab, không reload Sheets sau mỗi lần lưu -->
+    
+
+
+<script>
         // CƠ CHẾ TỰ ĐỘNG CẬP NHẬT KHI CÓ CODE MỚI
-        const APP_VERSION = "2026.09.01-v15";  
+        const APP_VERSION = "2026.09.15-v17";  
         if (localStorage.getItem('app_version') !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
             window.location.reload(true);
@@ -571,6 +575,7 @@
     <button class="main-tab-btn" onclick="switchMainTab('baocao')">Báo Cáo Cuối Ngày</button>
     <button class="main-tab-btn" onclick="switchMainTab('dashboard')">Dashboard Tổng Quan</button>
     <button class="main-tab-btn" onclick="switchMainTab('handover')">Tiến Độ Giao Nhà</button>
+    <button class="main-tab-btn" onclick="switchMainTab('danhgia_cht')">Đánh Giá Của CHT</button>
 </div>
 
 <!-- ================= TAB 1: QUẢN LÝ NHÂN LỰC ================= -->
@@ -800,6 +805,38 @@
     </div>
 </div>
 
+<!-- ================= TAB 5: ĐÁNH GIÁ CỦA CHT ================= -->
+<div id="viewDanhGiaCHT" class="section-view">
+    <div class="handover-user-id-row">
+        <label for="chtUserId">Mã ID Chỉ Huy Trưởng</label>
+        <input id="chtUserId" type="password" placeholder="Nhập mã CHT" autocomplete="off">
+        <button class="ok-btn" type="button" onclick="verifyAndLoadCHTData()">XÁC NHẬN ID</button>
+        <span id="chtVerifyStatus"></span>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>THÁP / TẦNG</th>
+                    <th>HẠNG MỤC</th>
+                    <th>NHÀ THẦU</th>
+                    <th>CÔNG TÁC</th>
+                    <th>NHÂN LỰC BÁO CÁO</th>
+                    <th>1. ĐÁNH GIÁ NHÂN LỰC</th>
+                    <th>2. ĐÁNH GIÁ TIẾN ĐỘ</th>
+                    <th>GHI CHÚ CHT</th>
+                </tr>
+            </thead>
+            <tbody id="chtEvaluationTableBody">
+                <tr><td colspan="8" style="text-align:center;padding:18px;">Nhập mã CHT để tải công việc hôm nay.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top:25px;display:flex;justify-content:flex-end;">
+        <button class="send-btn" id="chtSendBtn" type="button" onclick="saveCHTEvaluations()">GỬI ĐÁNH GIÁ CHT</button>
+    </div>
+</div>
+
 <script>
     function formatDate(dateStr) {
         if (!dateStr) return "";
@@ -826,7 +863,7 @@
         return formatDate(dateStr) === getTodayString();
     }
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyTlfliOhR58ljBZ6D6fmH-zHE2ch8Ic3y11XkOac9IvS-atef2Fdjf_nc6gWkICnSA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3qZswQyyxq7CflcQScS3SwwadpGjFx8xKzmdO9Fyc8WS2B8kKjlWu2cPzWotMKNV40A/exec";
 
     const database = {
         "Khối Đế": [
@@ -943,26 +980,33 @@
     let handoverSheetRecords = {};
     let handoverUserIds = new Set();
     const sendingModes = new Set();
+    let reportLoaded = false;
+    let reportLoadingPromise = null;
+    let handoverLoaded = false;
+    let handoverLoadingPromise = null;
 
     function switchMainTab(tabName) {
-        document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+        const tabs = document.querySelectorAll('.main-tab-btn');
+        const views = document.querySelectorAll('.section-view');
+        tabs.forEach(btn => btn.classList.remove('active'));
+        views.forEach(view => view.classList.remove('active'));
 
-        if(tabName === 'nhanluc') {
-            document.querySelectorAll('.main-tab-btn')[0].classList.add('active');
-            document.getElementById('viewNhanLuc').classList.add('active');
-        } else if(tabName === 'baocao') {
-            document.querySelectorAll('.main-tab-btn')[1].classList.add('active');
-            document.getElementById('viewBaoCao').classList.add('active');
-            syncNhanLucToReport();
-        } else if(tabName === 'dashboard') {
-            document.querySelectorAll('.main-tab-btn')[2].classList.add('active');
-            document.getElementById('viewDashboard').classList.add('active');
-            updateDashboardStats();
-        } else {
-            document.querySelectorAll('.main-tab-btn')[3].classList.add('active');
-            document.getElementById('viewHandover').classList.add('active');
-            renderHandoverTable();
+        const map = {
+            nhanluc: ['viewNhanLuc', 0],
+            baocao: ['viewBaoCao', 1],
+            dashboard: ['viewDashboard', 2],
+            handover: ['viewHandover', 3],
+            danhgia_cht: ['viewDanhGiaCHT', 4]
+        };
+        const item = map[tabName] || map.nhanluc;
+        tabs[item[1]]?.classList.add('active');
+        document.getElementById(item[0])?.classList.add('active');
+
+        if (tabName === 'baocao') { loadBaoCaoData().catch(err => console.error(err)); syncNhanLucToReport(); }
+        else if (tabName === 'dashboard') updateDashboardStats();
+        else if (tabName === 'handover') {
+            if (!handoverLoaded) loadHandoverData().catch(err => console.error(err));
+            else renderHandoverTable();
         }
     }
 
@@ -1064,25 +1108,13 @@
     }
 
     function saveHandoverStatusToSheet(record, status, ghiChu, id, userId) {
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: 'handover',
-                userId,
-                rows: [{
-                    thap: record.tower,
-                    tang: record.floor,
-                    ngayBatDau: record.start,
-                    ngayDuKien: record.end,
-                    trangThai: status,
-                    ghiChu,
-                    ngayCapNhat: getTodayString(),
-                    id
-                }]
-            })
-        }).catch(error => console.error('Lỗi đồng bộ tiến độ giao nhà:', error));
+        postJSON({
+            type: 'handover', userId, rows: [{
+                thap: record.tower, tang: record.floor, ngayBatDau: record.start,
+                ngayDuKien: record.end, trangThai: status, ghiChu,
+                ngayCapNhat: getTodayString(), id
+            }]
+        }).then(() => loadHandoverData()).catch(error => console.error('Lỗi đồng bộ tiến độ giao nhà:', error));
     }
 
     function filterHandoverByTower(tower) {
@@ -1161,7 +1193,6 @@
         setupThemeToggle();
         updateDropdowns('nhanluc');
         trackReportEdits();
-        renderHandoverTable();
         loadDataFromGoogleSheets();
     }
 
@@ -1169,34 +1200,34 @@
         const reportBody = document.getElementById('reportTableBody');
         if (!reportBody) return;
 
+        const existing = new Map();
+        Array.from(reportBody.rows).forEach(row => {
+            const key = row.dataset.sourceKey;
+            if (key) existing.set(key, row);
+        });
+
+        const fragment = document.createDocumentFragment();
         document.querySelectorAll('#nlTableBody tr').forEach(sourceRow => {
             const sourceCells = sourceRow.querySelectorAll('td');
             if (sourceCells.length < 7) return;
-
-            const sourceKey = makeReportKey(Array.from(sourceCells).slice(1, 5).map(cell => cell.innerText));
-            const matchingRows = Array.from(reportBody.rows).filter(row => row.dataset.sourceKey === sourceKey);
-            if (matchingRows.length) {
-                matchingRows.slice(1).forEach(row => row.remove());
-                return;
-            }
+            const key = makeReportKey(Array.from(sourceCells).slice(1,5).map(cell => cell.innerText));
+            if (existing.has(key)) return;
 
             const reportRow = document.createElement('tr');
-            reportRow.dataset.sourceKey = sourceKey;
+            reportRow.dataset.sourceKey = key;
             reportRow.dataset.userModified = 'false';
             reportRow.innerHTML = `
-                <td>${sourceCells[1].innerText}</td>
-                <td>${sourceCells[2].innerText}</td>
-                <td>${sourceCells[3].innerText}</td>
-                <td>${sourceCells[4].innerText}</td>
+                <td>${esc(sourceCells[1].innerText)}</td><td>${esc(sourceCells[2].innerText)}</td><td>${esc(sourceCells[3].innerText)}</td><td>${esc(sourceCells[4].innerText)}</td>
                 <td><input type="text" placeholder="Nhập căn..." class="report-apartment"></td>
                 <td><input type="text" placeholder="VD: 100%" class="report-progress"></td>
                 <td><label class="status-toggle"><input type="checkbox" class="report-status" onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">Chưa xong</span></label></td>
                 <td><input type="text" placeholder="Ghi chú báo cáo..." class="report-note"></td>
-                <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
-            `;
+                <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>`;
             reportRow.dataset.original = JSON.stringify(getReportRowValues(reportRow));
-            reportBody.appendChild(reportRow);
+            fragment.appendChild(reportRow);
+            existing.set(key, reportRow);
         });
+        reportBody.appendChild(fragment);
     }
 
     function filterReportByContractor(contractorName) {
@@ -1285,87 +1316,110 @@
         document.getElementById('psCongTac').focus();
     }
 
-    function loadDataFromGoogleSheets() {
-        fetch(SCRIPT_URL)
-        .then(response => response.json())
-        .then(data => {
-            const nlBody = document.getElementById('nlTableBody');
-            const bcBody = document.getElementById('reportTableBody');
+    let bootstrapPromise = null;
 
+    async function loadHandoverData(force = false) {
+        if (handoverLoadingPromise && !force) return handoverLoadingPromise;
+        if (handoverLoaded && !force) { renderHandoverTable(); return; }
+
+        handoverLoadingPromise = fetch(`${SCRIPT_URL}?action=handover&_=${Date.now()}`, {
+            method: 'GET', cache: 'no-store', redirect: 'follow'
+        })
+        .then(async response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.status && data.status !== 'success') throw new Error(data.message || 'Backend lỗi');
             handoverSheetRecords = {};
-            handoverUserIds = new Set((data.userIds || []).map(id => String(id).trim()).filter(Boolean));
             (data.tienDoGiaoNha || []).forEach(row => {
                 handoverSheetRecords[`${row.thap}-${row.tang}`] = row;
             });
+            handoverLoaded = true;
             renderHandoverTable();
-            
-            nlBody.innerHTML = "";
-            bcBody.innerHTML = "";
+            return data;
+        })
+        .finally(() => { handoverLoadingPromise = null; });
 
-            const today = new Date();
-            const dayCurrent = String(today.getDate()).padStart(2, '0');
-            const monthCurrent = String(today.getMonth() + 1).padStart(2, '0');
-            const yearCurrent = today.getFullYear();
-            const todayStr = `${dayCurrent}/${monthCurrent}/${yearCurrent}`;
+        return handoverLoadingPromise;
+    }
 
-            if(data.nhanLuc) {
-                data.nhanLuc.forEach(row => {
-                    let formattedDate = formatDate(row.ngay);
-                    if (isToday(row.ngay)) {
-                        let tr = document.createElement('tr');
-                        tr.setAttribute('data-saved', 'true');
-                        tr.innerHTML = `
-                            <td>${formattedDate}</td>
-                            <td>${row.tang}</td>
-                            <td>${row.hangMuc}</td>
-                            <td>${row.nhaThau}</td>
-                            <td>${row.congTac}</td>
-                            <td class="col-nhanluc" data-val="${row.soLuong}">${row.soLuong} công nhân</td>
-                            <td>${row.ghiChu}</td>
-                            <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td>
-                        `;
-                        nlBody.prepend(tr);
-                    }
-                });
-                updateTotal();
-            }
+    async function loadDataFromGoogleSheets(force = false) {
+        if (bootstrapPromise && !force) return bootstrapPromise;
 
-            if (data.baoCao) {
-                const latestReportRows = new Map();
-                data.baoCao.forEach(row => {
-                    const formattedDate = formatDate(row.ngay);
-                    if (!isToday(row.ngay)) return;
-                    latestReportRows.set(makeReportKey([row.thapTang, row.hangMuc, row.nhaThau, row.congTac]), row);
-                });
-
-                latestReportRows.forEach(row => {
-                    const formattedDate = formatDate(row.ngay);
-
-                    const reportRow = document.createElement('tr');
-                    const sourceKey = makeReportKey([row.thapTang, row.hangMuc, row.nhaThau, row.congTac]);
-                    reportRow.dataset.sourceKey = sourceKey;
-                    reportRow.dataset.saved = 'true';
-                    reportRow.dataset.userModified = 'false';
-                    reportRow.innerHTML = `
-                        <td>${row.thapTang || ''}</td>
-                        <td>${row.hangMuc || ''}</td>
-                        <td>${row.nhaThau || ''}</td>
-                        <td>${row.congTac || ''}</td>
-                        <td><input type="text" value="${row.can || ''}" placeholder="Nhập căn..." class="report-apartment"></td>
-                        <td><input type="text" value="${row.tienDo || ''}" placeholder="VD: 100%" class="report-progress"></td>
-                        <td><label class="status-toggle"><input type="checkbox" class="report-status" ${row.trangThai === 'Đã xong' ? 'checked' : ''} onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">${row.trangThai === 'Đã xong' ? 'Đã xong' : 'Chưa xong'}</span></label></td>
-                        <td><input type="text" value="${row.ghiChu || ''}" placeholder="Ghi chú báo cáo..." class="report-note"></td>
-                        <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td>
-                    `;
-                    reportRow.dataset.original = JSON.stringify(getReportRowValues(reportRow));
-                    bcBody.appendChild(reportRow);
-                });
-            }
-
+        // Bootstrap CHỈ tải Nhân lực hôm nay. Tiến độ giao nhà được lazy-load
+        // khi người dùng mở tab đó, tránh chờ dữ liệu không cần thiết lúc mở trang.
+        bootstrapPromise = fetch(`${SCRIPT_URL}?action=nhanluc&_=${Date.now()}`, {
+            method: 'GET', cache: 'no-store', redirect: 'follow'
+        })
+        .then(async response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.status && data.status !== 'success') throw new Error(data.message || 'Backend lỗi');
+            return data;
+        })
+        .then(data => {
+            const nlRows = data.nhanLuc || [];
+            const nlBody = document.getElementById('nlTableBody');
+            nlBody.innerHTML = nlRows.map(row => `
+                <tr data-saved="true"><td>${esc(row.ngay)}</td><td>${esc(row.tang)}</td><td>${esc(row.hangMuc)}</td><td>${esc(row.nhaThau)}</td><td>${esc(row.congTac)}</td>
+                <td class="col-nhanluc" data-val="${esc(row.soLuong)}">${esc(row.soLuong)} công nhân</td><td>${esc(row.ghiChu)}</td>
+                <td><button class="delete-btn" onclick="deleteRow(this, 'nhanluc')">Xóa</button></td></tr>`).join('');
+            updateTotal();
             syncNhanLucToReport();
             updateDashboardStats();
+            return data;
         })
-        .catch(err => console.log("Lỗi tải dữ liệu chung:", err));
+        .catch(err => { console.error('Lỗi tải dữ liệu:', err); throw err; })
+        .finally(() => { bootstrapPromise = null; });
+
+        return bootstrapPromise;
+    }
+
+    async function loadBaoCaoData(force = false) {
+        if (reportLoaded && !force) return;
+        if (reportLoadingPromise && !force) return reportLoadingPromise;
+        reportLoadingPromise = fetch(`${SCRIPT_URL}?action=baocao&_=${Date.now()}`, {cache:'no-store', redirect:'follow'})
+            .then(async response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (data.status && data.status !== 'success') throw new Error(data.message || 'Backend lỗi');
+                const latest = new Map();
+                (data.baoCao || []).forEach(row => latest.set(makeReportKey([row.thapTang,row.hangMuc,row.nhaThau,row.congTac]), row));
+                const body = document.getElementById('reportTableBody');
+                body.innerHTML = Array.from(latest.values()).map(row => {
+                    const done = row.trangThai === 'Đã xong';
+                    return `<tr data-source-key="${escAttr(makeReportKey([row.thapTang,row.hangMuc,row.nhaThau,row.congTac]))}" data-saved="true" data-user-modified="false">
+                        <td>${esc(row.thapTang)}</td><td>${esc(row.hangMuc)}</td><td>${esc(row.nhaThau)}</td><td>${esc(row.congTac)}</td>
+                        <td><input type="text" value="${escAttr(row.can || '')}" placeholder="Nhập căn..." class="report-apartment"></td>
+                        <td><input type="text" value="${escAttr(row.tienDo || '')}" placeholder="VD: 100%" class="report-progress"></td>
+                        <td><label class="status-toggle"><input type="checkbox" class="report-status" ${done?'checked':''} onchange="updateStatusLabel(this)"><span class="toggle-track"></span><span class="status-label">${done?'Đã xong':'Chưa xong'}</span></label></td>
+                        <td><input type="text" value="${escAttr(row.ghiChu || '')}" placeholder="Ghi chú báo cáo..." class="report-note"></td>
+                        <td><button class="delete-btn" onclick="deleteRow(this, 'baocao')">Xóa</button></td></tr>`;
+                }).join('');
+                Array.from(body.rows).forEach(row => row.dataset.original = JSON.stringify(getReportRowValues(row)));
+                reportLoaded = true;
+                syncNhanLucToReport();
+                return data;
+            })
+            .finally(() => { reportLoadingPromise = null; });
+        return reportLoadingPromise;
+    }
+
+    function esc(value) {
+        return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    const escAttr = esc;
+
+    async function postJSON(payload) {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload), redirect: 'follow', cache: 'no-store'
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        let data;
+        try { data = JSON.parse(text); } catch (_) { throw new Error('Backend không trả JSON hợp lệ'); }
+        if (data.status !== 'success') throw new Error(data.message || 'Lưu dữ liệu thất bại');
+        return data;
     }
 
     function selectTower(towerName, mode) {
@@ -1558,73 +1612,125 @@ function updateDropdowns(mode) {
         }
     }
 
-    function sendData(mode) {
+    async function sendData(mode) {
         if (sendingModes.has(mode)) return;
         sendingModes.add(mode);
         const sendButton = document.querySelector(`.send-btn[onclick="sendData('${mode}')"]`);
-        if (sendButton) {
-            sendButton.disabled = true;
-            sendButton.dataset.originalText = sendButton.innerText;
-            sendButton.innerText = 'ĐANG GỬI...';
-        }
+        if (sendButton) { sendButton.disabled = true; sendButton.dataset.originalText = sendButton.innerText; sendButton.innerText = 'ĐANG GỬI...'; }
+        try {
+            const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
+            const candidateRows = Array.from(document.querySelectorAll(`#${tbodyId} tr`));
+            const rows = mode === 'baocao'
+                ? candidateRows.filter(row => row.dataset.userModified === 'true' || row.dataset.original !== JSON.stringify(getReportRowValues(row)))
+                : candidateRows.filter(row => row.dataset.saved !== 'true');
+            if (!rows.length) throw new Error('Không có dữ liệu mới nào để gửi!');
 
-        const tbodyId = mode === 'nhanluc' ? 'nlTableBody' : 'reportTableBody';
-        const candidateRows = document.querySelectorAll(`#${tbodyId} tr`);
-        const rows = mode === 'baocao'
-            ? Array.from(candidateRows).filter(row => row.dataset.userModified === 'true' || row.dataset.original !== JSON.stringify(getReportRowValues(row)))
-            : Array.from(candidateRows).filter(row => row.dataset.saved !== 'true');
-        
-        if (rows.length === 0) {
-            alert('Không có dữ liệu mới nào để gửi!');
+            const payloadData = mode === 'nhanluc' ? rows.map(row => {
+                const c = row.querySelectorAll('td');
+                return {ngay:c[0].innerText,tang:c[1].innerText,hangMuc:c[2].innerText,nhaThau:c[3].innerText,congTac:c[4].innerText,soLuong:c[5].dataset.val||c[5].innerText,ghiChu:c[6].innerText};
+            }) : rows.map(getReportRowValues);
+
+            await postJSON({type: mode, rows: payloadData});
+            alert('Đã đồng bộ thành công!');
+            if (mode === 'baocao') {
+                rows.forEach(row => {
+                    row.dataset.saved = 'true';
+                    row.dataset.userModified = 'false';
+                    row.dataset.original = JSON.stringify(getReportRowValues(row));
+                });
+                reportLoaded = true;
+            } else {
+                rows.forEach(row => row.dataset.saved = 'true');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert(error.message || 'Có lỗi xảy ra khi gửi dữ liệu!');
+        } finally {
             finishSending(mode, sendButton);
+        }
+    }
+
+    let chtVerifiedUserId = '';
+    let chtEvaluationRows = [];
+
+    async function verifyAndLoadCHTData() {
+        const input = document.getElementById('chtUserId');
+        const status = document.getElementById('chtVerifyStatus');
+        const body = document.getElementById('chtEvaluationTableBody');
+        const userId = input?.value.trim() || '';
+        if (!userId) { alert('Vui lòng nhập mã CHT.'); input?.focus(); return; }
+        status.textContent = 'Đang kiểm tra...';
+        body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:18px;">Đang tải công việc hôm nay...</td></tr>';
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=verifyCHT&userId=${encodeURIComponent(userId)}&_=${Date.now()}`, {cache:'no-store', redirect:'follow'});
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (!data.verified || data.status !== 'success') throw new Error(data.message || 'ID CHT không hợp lệ');
+            chtVerifiedUserId = data.userId;
+            chtEvaluationRows = data.rows || [];
+            status.textContent = `✓ ${data.role || 'CHT'}`;
+            status.className = 'cht-verified';
+            renderCHTEvaluationTable();
+        } catch (error) {
+            console.error(error);
+            chtVerifiedUserId = ''; chtEvaluationRows = [];
+            status.textContent = '';
+            body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:18px;">Không tải được dữ liệu CHT.</td></tr>';
+            alert(error.message || 'Không thể tải dữ liệu CHT.');
+        }
+    }
+
+    function renderCHTEvaluationTable() {
+        const body = document.getElementById('chtEvaluationTableBody');
+        if (!body) return;
+        if (!chtEvaluationRows.length) {
+            body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:18px;">Hôm nay chưa có công việc trong tab Nhân lực.</td></tr>';
             return;
         }
+        body.innerHTML = chtEvaluationRows.map((row, i) => `
+            <tr data-index="${i}">
+                <td>${esc(row.thapTang)}</td><td>${esc(row.hangMuc)}</td><td>${esc(row.nhaThau)}</td><td>${esc(row.congTac)}</td>
+                <td>${esc(row.nhanLucBaoCao)}</td>
+                <td><select class="cht-nl-eval"><option value="">-- Chọn --</option><option ${row.nhanLucDanhGia==='Đủ'?'selected':''}>Đủ</option><option ${row.nhanLucDanhGia==='Thiếu'?'selected':''}>Thiếu</option></select></td>
+                <td><select class="cht-td-eval"><option value="">-- Chọn --</option><option ${row.tienDoDanhGia==='Đạt'?'selected':''}>Đạt</option><option ${row.tienDoDanhGia==='Cần đẩy nhanh'?'selected':''}>Cần đẩy nhanh</option><option ${row.tienDoDanhGia==='Chậm'?'selected':''}>Chậm</option></select></td>
+                <td><input class="cht-note" type="text" value="${escAttr(row.ghiChuCHT || '')}" placeholder="Ghi chú..."></td>
+            </tr>`).join('');
+    }
 
-        let payloadData = [];
-
-        if (mode === 'nhanluc') {
-            rows.forEach(row => {
-                const cols = row.querySelectorAll('td');
-                payloadData.push({
-                    ngay: cols[0].innerText,
-                    tang: cols[1].innerText,
-                    hangMuc: cols[2].innerText,
-                    nhaThau: cols[3].innerText,
-                    congTac: cols[4].innerText,
-                    soLuong: cols[5].getAttribute('data-val') || cols[5].innerText,
-                    ghiChu: cols[6].innerText
-                });
+    async function saveCHTEvaluations() {
+        if (!chtVerifiedUserId) { alert('Vui lòng xác nhận ID CHT trước.'); return; }
+        const btn = document.getElementById('chtSendBtn');
+        if (btn?.disabled) return;
+        if (btn) { btn.disabled = true; btn.dataset.originalText = btn.innerText; btn.innerText = 'ĐANG LƯU...'; }
+        try {
+            const rows = Array.from(document.querySelectorAll('#chtEvaluationTableBody tr[data-index]')).map(tr => {
+                const i = Number(tr.dataset.index);
+                const base = chtEvaluationRows[i];
+                return {
+                    ngay: base.ngay, thapTang: base.thapTang, hangMuc: base.hangMuc, nhaThau: base.nhaThau, congTac: base.congTac,
+                    nhanLucBaoCao: base.nhanLucBaoCao, tienDo: '', trangThai: '',
+                    nhanLucDanhGia: tr.querySelector('.cht-nl-eval')?.value || '',
+                    tienDoDanhGia: tr.querySelector('.cht-td-eval')?.value || '',
+                    ghiChuCHT: tr.querySelector('.cht-note')?.value.trim() || ''
+                };
             });
-        } else {
-            rows.forEach(row => {
-                payloadData.push(getReportRowValues(row));
+            if (!rows.length) throw new Error('Không có công việc để đánh giá.');
+            await postJSON({type:'danhgia_cht', userId:chtVerifiedUserId, rows});
+            rows.forEach((saved, index) => {
+                if (chtEvaluationRows[index]) {
+                    chtEvaluationRows[index].nhanLucDanhGia = saved.nhanLucDanhGia;
+                    chtEvaluationRows[index].tienDoDanhGia = saved.tienDoDanhGia;
+                    chtEvaluationRows[index].ghiChuCHT = saved.ghiChuCHT;
+                }
             });
+            alert('Đã lưu đánh giá CHT thành công.');
+            renderCHTEvaluationTable();
+        } catch (error) {
+            console.error(error);
+            alert(error.message || 'Lưu đánh giá CHT thất bại.');
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerText = btn.dataset.originalText || 'GỬI ĐÁNH GIÁ CHT'; }
         }
-
-        const payload = {
-            type: mode,
-            rows: payloadData
-        };
-
-        alert('Đang gửi dữ liệu mới lên Google Sheets...');
-
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(() => {
-            alert('Đã đồng bộ thành công!');
-            loadDataFromGoogleSheets(); 
-        })
-        .catch(error => {
-            console.error('Lỗi:', error);
-            alert('Có lỗi xảy ra khi gửi dữ liệu!');
-        })
-        .finally(() => finishSending(mode, sendButton));
     }
 
     function finishSending(mode, sendButton) {
