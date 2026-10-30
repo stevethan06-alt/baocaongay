@@ -53,7 +53,8 @@
             --shadow-soft: 0 8px 18px rgba(15, 23, 42, 0.08);
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--app-font, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+            font-size: calc(16px * var(--fs-scale, 1));
             background: linear-gradient(180deg, var(--bg-soft) 0%, var(--bg-color) 100%);
             color: var(--text-main);
             margin: 0;
@@ -71,14 +72,14 @@
             flex-wrap: wrap;
         }
         .header h1 {
-            font-size: 24px;
+            font-size: calc(24px * var(--fs-scale, 1));
             color: var(--text-strong);
             margin: 0 0 5px 0;
         }
         .header p {
             color: var(--text-muted);
             margin: 0;
-            font-size: 14px;
+            font-size: calc(14px * var(--fs-scale, 1));
         }
         .header-actions {
             display: flex;
@@ -115,7 +116,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 16px;
+            font-size: calc(16px * var(--fs-scale, 1));
             transition: all 0.3s;
             box-shadow: var(--shadow-soft);
         }
@@ -161,7 +162,7 @@
         .filter-group label {
             display: block;
             margin-bottom: 8px;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
             color: var(--text-muted);
             font-weight: 600;
         }
@@ -193,7 +194,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
-            font-size: 15px;
+            font-size: calc(15px * var(--fs-scale, 1));
         }
         .ok-btn:hover {
             background-color: #2563eb;
@@ -206,7 +207,7 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: calc(16px * var(--fs-scale, 1));
             transition: background 0.2s;
         }
         .send-btn:hover {
@@ -219,7 +220,7 @@
             padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
         }
         .clear-all-btn {
             background-color: #ef4444;
@@ -229,7 +230,7 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: calc(14px * var(--fs-scale, 1));
             transition: background 0.2s;
         }
         .clear-all-btn:hover {
@@ -245,7 +246,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 16px;
+            font-size: calc(16px * var(--fs-scale, 1));
             font-weight: bold;
             color: var(--text-main);
         }
@@ -268,7 +269,7 @@
             padding: 20px;
         }
         .tower-title {
-            font-size: 18px;
+            font-size: calc(18px * var(--fs-scale, 1));
             font-weight: bold;
             color: var(--accent-color);
             margin-bottom: 15px;
@@ -289,11 +290,11 @@
         .dash-sub-card h4 {
             margin: 0 0 8px 0;
             color: white;
-            font-size: 15px;
+            font-size: calc(15px * var(--fs-scale, 1));
         }
         .dash-sub-card p {
             margin: 4px 0;
-            font-size: 13px;
+            font-size: calc(13px * var(--fs-scale, 1));
             color: var(--text-muted);
         }
         .dash-sub-card .highlight {
@@ -312,7 +313,7 @@
             width: 100%;
             border-collapse: collapse;
             text-align: left;
-            font-size: 14px;
+            font-size: calc(14px * var(--fs-scale, 1));
         }
         th, td {
             padding: 14px 16px;
@@ -323,7 +324,7 @@
             color: var(--text-main);
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
         }
         td {
             color: var(--text-main);
@@ -360,7 +361,7 @@
         .form-phat-sinh-container label {
             display: block;
             margin-bottom: 7px;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
             color: var(--text-muted);
             font-weight: 600;
             white-space: nowrap;
@@ -386,7 +387,7 @@
             margin: 0;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: calc(15px * var(--fs-scale, 1));
             font-weight: 700;
         }
         .btn-them-phatsinh {
@@ -397,7 +398,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 14px;
+            font-size: calc(14px * var(--fs-scale, 1));
         }
         .btn-them-phatsinh:hover,
         .form-phat-sinh-container .btn-ok:hover {
@@ -436,7 +437,7 @@
             gap: 8px;
             white-space: nowrap;
             color: #f87171;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
             font-weight: 700;
         }
         .status-toggle input {
@@ -491,19 +492,19 @@
         .handover-summary-card strong {
             display: block;
             color: white;
-            font-size: 24px;
+            font-size: calc(24px * var(--fs-scale, 1));
             margin-top: 5px;
         }
         .handover-summary-card span {
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
             font-weight: 600;
         }
         .handover-status {
             display: inline-block;
             padding: 5px 9px;
             border-radius: 999px;
-            font-size: 12px;
+            font-size: calc(12px * var(--fs-scale, 1));
             font-weight: 700;
             white-space: nowrap;
         }
@@ -529,7 +530,7 @@
         }
         .handover-user-id-row label {
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: calc(13px * var(--fs-scale, 1));
             font-weight: 700;
             white-space: nowrap;
         }
@@ -556,6 +557,55 @@
                 width: 100%;
             }
         }
+
+        /* ===== Tuỳ chỉnh font chữ / cỡ chữ (để chụp màn hình dễ đọc) ===== */
+        button, input, select, textarea {
+            font-family: inherit;
+            font-size: calc(13.3333px * var(--fs-scale, 1));
+        }
+        .header-actions {
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .font-tools {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            border-radius: 999px;
+        }
+        .font-tools .ft-label {
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0 4px;
+        }
+        .font-tools select {
+            background: var(--field-bg);
+            color: var(--field-text);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px 8px;
+            cursor: pointer;
+        }
+        .font-tools .ft-btn {
+            border: 1px solid var(--border-color);
+            background: var(--field-bg);
+            color: var(--text-main);
+            border-radius: 8px;
+            min-width: 32px;
+            padding: 4px 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .font-tools .ft-btn:hover { background: var(--hover-color); }
+        .font-tools .ft-size {
+            min-width: 46px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--text-strong);
+        }
     </style>
 </head>
 <body>
@@ -566,6 +616,24 @@
         <p>Chọn tháp, tầng, hạng mục, nhà thầu và cập nhật dữ liệu hàng ngày</p>
     </div>
     <div class="header-actions">
+        <div class="font-tools" title="Tuỳ chỉnh font chữ và cỡ chữ">
+            <span class="ft-label">Aa</span>
+            <select id="fontFamilySelect" aria-label="Font chữ">
+                <option value="default">Mặc định (Segoe UI)</option>
+                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                <option value="'Trebuchet MS', Tahoma, sans-serif">Trebuchet MS</option>
+                <option value="Calibri, 'Segoe UI', sans-serif">Calibri</option>
+                <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+                <option value="Consolas, 'Courier New', monospace">Consolas (đơn cách)</option>
+            </select>
+            <button type="button" class="ft-btn" id="fontSizeDown" title="Giảm cỡ chữ">A−</button>
+            <span class="ft-size" id="fontSizeValue">100%</span>
+            <button type="button" class="ft-btn" id="fontSizeUp" title="Tăng cỡ chữ">A+</button>
+            <button type="button" class="ft-btn" id="fontReset" title="Về mặc định">↺</button>
+        </div>
         <button id="themeToggle" class="theme-toggle" type="button">🌙 Chế độ tối</button>
     </div>
 </div>
@@ -1164,6 +1232,46 @@
         }).join('');
     }
 
+
+    function setupFontTools() {
+        const root = document.documentElement;
+        const sel = document.getElementById('fontFamilySelect');
+        const val = document.getElementById('fontSizeValue');
+        const up = document.getElementById('fontSizeUp');
+        const down = document.getElementById('fontSizeDown');
+        const reset = document.getElementById('fontReset');
+        if (!sel || !val || !up || !down || !reset) return;
+
+        const MIN = 0.8, MAX = 2.0, STEP = 0.1;
+        let scale = 1;
+        let family = 'default';
+        try {
+            const s = parseFloat(localStorage.getItem('fontScale'));
+            if (!isNaN(s)) scale = Math.min(MAX, Math.max(MIN, s));
+            family = localStorage.getItem('fontFamily') || 'default';
+        } catch (e) {}
+        if (![...sel.options].some(o => o.value === family)) family = 'default';
+
+        function apply() {
+            root.style.setProperty('--fs-scale', String(scale));
+            if (family === 'default') root.style.removeProperty('--app-font');
+            else root.style.setProperty('--app-font', family);
+            val.textContent = Math.round(scale * 100) + '%';
+            sel.value = family;
+            down.disabled = scale <= MIN + 0.001;
+            up.disabled = scale >= MAX - 0.001;
+            try {
+                localStorage.setItem('fontScale', String(scale));
+                localStorage.setItem('fontFamily', family);
+            } catch (e) {}
+        }
+        up.addEventListener('click', () => { scale = Math.min(MAX, Math.round((scale + STEP) * 10) / 10); apply(); });
+        down.addEventListener('click', () => { scale = Math.max(MIN, Math.round((scale - STEP) * 10) / 10); apply(); });
+        reset.addEventListener('click', () => { scale = 1; family = 'default'; apply(); });
+        sel.addEventListener('change', () => { family = sel.value; apply(); });
+        apply();
+    }
+
     function setupThemeToggle() {
         const toggleBtn = document.getElementById('themeToggle');
         if (!toggleBtn) return;
@@ -1191,6 +1299,7 @@
             nlTang.innerHTML += `<option value="Tầng ${i}">Tầng ${i}</option>`;
         }
         setupThemeToggle();
+        setupFontTools();
         updateDropdowns('nhanluc');
         trackReportEdits();
         loadDataFromGoogleSheets();
